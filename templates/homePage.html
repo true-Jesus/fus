@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Электронный дневник</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+    header {
+      background-color: #333;
+      color: #fff;
+      padding: 1rem 0;
+      text-align: center;
+    }
+
+    main {
+      padding: 2rem 0;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .button {
+      background-color: #6a572f;
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+      background-color: #45a049;
+    }
+
+    footer {
+      background-color: #333;
+      color: #fff;
+      padding: 1rem 0;
+      text-align: center;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+
+  </style>
+</head>
+<body>
+<header>
+  <h1>Электронный дневник</h1>
+</header>
+
+<main>
+  <h1 id="welcome-message" style="text-align: center; margin-bottom: 1rem;"></h1>
+  <div class="container">
+    <button class="button" onclick="window.location.href = '/Gr'">таблица оценок</button>
+    <button class="button" onclick="window.location.href='/Analitic'">Аналитика</button>
+    <button class="button" onclick="window.location.href='/HomeGradeJahr'">Оценка за год</button>
+<!--    <button class="button" onclick="window.location.href='communication.html'">Общение с учениками</button>-->
+<!--    <button class="button" onclick="window.location.href='parent_communication.html'">Общение с родителями</button>-->
+<!--    <button class="button" onclick="window.location.href='notifications.html'">Уведомления</button>-->
+<!--    <button class="button" onclick="window.location.href='class_management.html'">Управление классом</button>-->
+<!--    <button class="button" onclick="window.location.href='additional_features.html'">Дополнительные функции</button>-->
+<!--    <button class="button" onclick="window.location.href='analytics.html'">Аналитика</button>-->
+
+  </div>
+</main>
+<footer>
+  <p>&copy; 2023 Электронный дневник</p>
+</footer>
+
+</body>
+</html>
+
