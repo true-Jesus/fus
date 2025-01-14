@@ -7,6 +7,7 @@ import (
 	"log"
 )
 
+// TODO:FUS-3 ааааааа
 func main() {
 
 	db, err := repo.ConnectToDB()
