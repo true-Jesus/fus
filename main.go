@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-//ааааааа
+// ааааааа
 func main() {
 
 	db, err := repo.ConnectToDB()
