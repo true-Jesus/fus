@@ -96,7 +96,28 @@ header {
     height: auto;
 }
 
+.settings {
+    background-color: #FFEBFC;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+    position: absolute;
+    top: 10%;
+    right: 27%;
+}
 
+.settings-image {
+    width: 50px;
+    height: auto;
+}
+
+.settings:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
 
 
 .profile-container {
@@ -104,7 +125,7 @@ header {
     padding: 20px;
     max-width: 700px;
     width: 100%;
-    margin-top: 5%;
+    margin-top: 3%;
     margin-left: 30%;
 }
 .profile-header{
@@ -113,12 +134,12 @@ header {
     margin-bottom: 15px;
 }
 .profile-photo {
-  width: 150px;
-  height: 150px;
+  width: 225px;
+  height: 225px;
   border-radius: 50%;
   overflow: hidden;
   margin-right: 15px;
-  align-self: flex-start;
+  align-self: center;
 }
 
 .profile-photo img {
@@ -138,6 +159,8 @@ header {
     padding: 5px;
     border-radius: 20px;
     margin-bottom: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .name-and-age{
@@ -156,18 +179,15 @@ header {
 
 .zodiac-and-gender{
     position: absolute;
-    right: -50px;
+    right: -80px;
     top: 50%;
     transform: translateY(-50%);
     white-space: nowrap;
 }
 
 .zodiac-and-gender img{
-    width: 20px;
-    height: 20px;
-}
-
-.zodiac-and-gender img{
+    width: 30px;
+    height: 30px;
     margin-left: 5px;
 }
 
@@ -178,12 +198,14 @@ header {
 }
 
 .work-and-study p img{
-    width: 20px; /* Задаем ширину */
-    height: 20px; /* Задаем высоту */
+    width: 30px;
+    height: 30px;
     margin-right: 5px;
 }
 
 .icon{
+    width: 30px;
+    height: 30px;
     margin-right: 5px;
 }
 .profile-about h3, .profile-interests h3 {
@@ -193,20 +215,25 @@ header {
     padding: 5px;
     border-radius: 20px;
     display: inline-block;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 .profile-about p {
-  padding: 15px;
-  border-radius: 20px;
-  color: #9A2867;
-  background-color: #FFEBFC;
-  margin-top: 10px;
-  display: block;
+    padding: 15px;
+    border-radius: 20px;
+    color: #9A2867;
+    background-color: #FFEBFC;
+    margin-top: 10px;
+    display: block;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .interests-container {
   display: flex;
   flex-wrap: wrap;
 }
+
 .interest {
   background-color: #FFEBF9;
   padding: 8px 12px;
@@ -215,4 +242,13 @@ header {
   margin-top: 10px;
   color: #9A2867;
   border: 2px solid #9A2867;
+}
+
+.city-container {
+    display: flex;
+    align-items: center;
+}
+
+#userCity{
+    margin-left: 5px;
 }
