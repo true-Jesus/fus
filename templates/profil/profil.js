@@ -5,16 +5,59 @@ document.addEventListener("DOMContentLoaded", function() {
     if (!userPhoto.getAttribute("src")) {
         userPhoto.src = defaultImagePath;
     }
+
     // Получаем элементы
     const userName = document.getElementById("userName");
     const userAge = document.getElementById("userAge");
     const userZodiac = document.getElementById("userZodiac");
-    const userWork = document.getElementById("userWork");
-    const userStudy = document.getElementById("userStudy");
+    const userWorkSpan = document.getElementById("userWork"); // Получаем span для работы
+    const userStudySpan = document.getElementById("userStudy"); // Получаем span для учебы
     const userCity = document.getElementById("userCity");
     const userDescription = document.getElementById("userDescription");
     const userGender = document.getElementById("userGender");
-    const interest1 = document.getElementById("interest1");
-    const interest2 = document.getElementById("interest2");
-    const interest3 = document.getElementById("interest3");
-})
+    const interestsContainer = document.getElementById("interestsContainer");
+
+
+    // Пример данных (здесь вы будете использовать реальные данные)
+    const userData = {
+        photo: "",
+        name: "Джон Доу",
+        age: 25,
+        zodiac: "",
+        work: "Каменщик",
+        study: "МГУ",
+        city: "Нью-Йорк",
+        description: "Люблю гулять по парку и играть на гитаре.",
+        gender: "",
+        interest: ["Футбол", "Музыка", "Программирование", "Танцы", "Путешествия"]
+    };
+
+    // Обновляем данные на странице
+    if(userData.photo){
+        userPhoto.src = userData.photo;
+    }
+
+    userName.textContent = userData.name;
+    userAge.textContent = userData.age + " лет";
+
+    if (userData.work) {
+        userWorkSpan.textContent = userData.work; // Вставляем текст в span
+    }
+
+    if (userData.study) {
+        userStudySpan.textContent = userData.study; // Вставляем текст в span
+    }
+
+    userCity.textContent = userData.city;
+    userDescription.textContent = userData.description;
+
+    // Динамическое добавление интересов
+    if (userData.interest && Array.isArray(userData.interest)) {
+        userData.interest.forEach(interest => {
+            const interestElement = document.createElement("span");
+            interestElement.classList.add("interest");
+            interestElement.textContent = interest;
+            interestsContainer.appendChild(interestElement);
+        });
+    }
+});
