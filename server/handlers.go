@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"path/filepath"
 )
 
 type Routes []Route
@@ -59,11 +60,17 @@ func NewRouter(h *Handlers) *mux.Router {
 		}
 
 	}
+	imagePath := filepath.Join(".", "image")
+	router.PathPrefix("/image/").Handler(http.StripPrefix("/image/", http.FileServer(http.Dir(imagePath))))
+
+	// Обслуживаем статические файлы из директории "templates"
+	templatesPath := filepath.Join(".", "templates")
+	router.PathPrefix("/templates/").Handler(http.StripPrefix("/templates/", http.FileServer(http.Dir(templatesPath))))
 	return router
 }
 func (h *Handlers) Home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
-	htmlFile := "templates/homePage.html"
+	htmlFile := "templates/home/home.html"
 	html, err := ioutil.ReadFile(htmlFile)
 	if err != nil {
 		log.Fatalf("Ошибка чтения файла: %v", err)
