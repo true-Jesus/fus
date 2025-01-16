@@ -23,7 +23,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const zodiacModal = document.getElementById("zodiacModal");
     const zodiacButtons = document.querySelectorAll(".zodiac-button");
     const zodiacIcon = document.getElementById("zodiacIcon");
-
+    genderModal.style.display = "none";
+    zodiacModal.style.display = "none";
     userGender.addEventListener("click", function(){
         genderModal.style.display = genderModal.style.display === "block" ? "none" : "block";
     });
@@ -37,7 +38,6 @@ document.addEventListener("DOMContentLoaded", function() {
             const gender = button.getAttribute("data-gender");
             userGenderSelect.value = gender;
             genderModal.style.display = "none";
-
         });
     });
     genderButtons.forEach(button => {
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function() {
     zodiacIcon.addEventListener("click", function(){
         userZodiac.style.display = "inline-block";
         zodiacIcon.style.display = "none";
-        zodiacModal.style.display = "block";
+        zodiacModal.style.display = "none";
 
     });
 
