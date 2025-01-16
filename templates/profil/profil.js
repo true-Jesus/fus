@@ -10,12 +10,21 @@ document.addEventListener("DOMContentLoaded", function() {
     const userName = document.getElementById("userName");
     const userAge = document.getElementById("userAge");
     const userZodiac = document.getElementById("userZodiac");
+    const defaultZodiacPath = "../../image/profil elements/not selected.png";
     const userWorkSpan = document.getElementById("userWork"); // Получаем span для работы
     const userStudySpan = document.getElementById("userStudy"); // Получаем span для учебы
     const userCity = document.getElementById("userCity");
     const userDescription = document.getElementById("userDescription");
     const userGender = document.getElementById("userGender");
+    const defaultGenderPath = "../../image/profil elements/not selected.png";
     const interestsContainer = document.getElementById("interestsContainer");
+
+    if (!userZodiac.getAttribute("src")) {
+        userZodiac.src = defaultZodiacPath;
+    }
+    if (!userGender.getAttribute("src")) {
+        userGender.src = defaultGenderPath;
+    }
 
 
     // Пример данных (здесь вы будете использовать реальные данные)
@@ -35,6 +44,12 @@ document.addEventListener("DOMContentLoaded", function() {
     // Обновляем данные на странице
     if(userData.photo){
         userPhoto.src = userData.photo;
+    }
+    if(userData.zodiac){
+        userPhoto.src = userData.zodiac;
+    }
+    if(userData.gender){
+        userPhoto.src = userData.gender;
     }
 
     userName.textContent = userData.name;
