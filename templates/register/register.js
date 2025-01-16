@@ -16,7 +16,7 @@ function register() {
             if (response.ok) {
                 // Успешная регистрация
                 // Перенаправляем на главную страницу
-                window.location.href = '/auf';
+                window.location.href = '/logPg';
             } else {
                 // Обработка ошибки регистрации
                 return response.text(); // Получаем текст ответа
