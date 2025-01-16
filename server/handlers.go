@@ -40,6 +40,7 @@ func NewRouter(h *Handlers) *mux.Router {
 	var (
 		routes = Routes{
 			Route{Name: "Home", Method: http.MethodGet, Pattern: "/", HandlerFunc: h.Home},
+			Route{Name: "Home", Method: http.MethodGet, Pattern: "/log", HandlerFunc: h.Login},
 		}
 	)
 	router := mux.NewRouter().StrictSlash(true)
@@ -71,6 +72,17 @@ func NewRouter(h *Handlers) *mux.Router {
 func (h *Handlers) Home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	htmlFile := "templates/home/home.html"
+	html, err := ioutil.ReadFile(htmlFile)
+	if err != nil {
+		log.Fatalf("Ошибка чтения файла: %v", err)
+	}
+
+	w.Write([]byte(html))
+}
+
+func (h *Handlers) Login(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	htmlFile := "templates/login/login.html"
 	html, err := ioutil.ReadFile(htmlFile)
 	if err != nil {
 		log.Fatalf("Ошибка чтения файла: %v", err)
