@@ -2,7 +2,7 @@ function login() {
     var username = document.getElementById('username').value;
     var password = document.getElementById('password').value;
     // Отправляем данные на /login
-    fetch('/login', {
+    fetch('/log', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -26,7 +26,7 @@ function login() {
             var token = data; // Обработайте токен, например, извлеките его из ответа
             setAuthToken(token); // Сохраняем токен в куки
             setCookie("user", username, 30);
-            window.location.href = '/';
+            window.location.href = '/profil';
 
             // window.location.href = '/'; // Перенаправляем на главную
         })
