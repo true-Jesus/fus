@@ -43,10 +43,10 @@ func generatePasswordHash(password string) (string, error) {
 // Функция для генерации JWT-токена
 func generateJWT(user *User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    "fus",                                 // Имя приложения
-		IssuedAt:  time.Now().Unix(),                     // Время выдачи
-		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(), // Время истечения// TODO: ПРОВЕРИТЬ УДАЛЕНИЯ ПО ВРЕМЕНИ
-		Subject:   user.Username,                         // Имя пользователя
+		Issuer:    "fus",                                  // Имя приложения
+		IssuedAt:  time.Now().Unix(),                      // Время выдачи
+		ExpiresAt: time.Now().Add(time.Hour * 240).Unix(), // Время истечения// TODO: ПРОВЕРИТЬ УДАЛЕНИЯ ПО ВРЕМЕНИ
+		Subject:   user.Username,                          // Имя пользователя
 	})
 
 	tokenString, err := token.SignedString(mySigningKey)
@@ -77,7 +77,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			}
 		}
 		if tokenString == "" {
-			http.Redirect(w, r, "/auf", http.StatusFound)
+			http.Redirect(w, r, "/", http.StatusFound)
 			return
 		}
 
@@ -99,7 +99,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		ipAddress := r.RemoteAddr
 		err = bcrypt.CompareHashAndPassword([]byte(hashedIP), []byte(ipAddress))
 		if err != nil {
-			http.Redirect(w, r, "/auf", http.StatusFound)
+			http.Redirect(w, r, "/", http.StatusFound)
 		}
 		// Доступ разрешен
 		next.ServeHTTP(w, r)
