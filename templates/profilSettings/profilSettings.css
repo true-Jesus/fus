@@ -1,6 +1,7 @@
 body {
+    max-width: 1000000px;
+    margin: 0 auto;
     font-family: sans-serif;
-    margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -152,7 +153,7 @@ header {
     cursor: pointer;
     border-radius: 50%;
     position: absolute;
-    margin-top: 3%;
+    margin-top: 5%;
 }
 
 .profile-header{
@@ -284,6 +285,7 @@ header {
 }
 
 .icon-choise {
+    cursor: pointer;
     background-color: #FFEBFC;
     width: 40px;
     height: 40px;
@@ -384,4 +386,130 @@ header {
 .zodiac-button:hover {
     width: 40px;
     height: 40px;
+}
+
+.profile-interests h3{
+    margin-bottom: 10px;
+    color: #9A2867;
+    background-color: #FFD0F8;
+    padding: 5px;
+    border-radius: 20px;
+    display: inline-block;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.profile-interests{
+    margin-top: 28%;
+    margin-left: 29%;
+
+}
+
+.interest {
+    background-color: #FFEBF9;
+    padding: 8px 12px;
+    border-radius: 20px;
+    margin-right: 5px;
+    margin-top: 10px;
+    color: #9A2867;
+    border: 2px solid #9A2867;
+}
+
+.plus{
+    cursor: pointer;
+    background-color: #FFEBFC;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    transition: background-color 0.1s ease;
+}
+
+.plus:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.add-interest-modal{
+    position: absolute;
+    top: 64%;
+    left: 36%;
+    z-index: 1000;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+}
+.add-interest-input{
+    background-color: #FFEBFC;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    width: 300px;
+    height: 15px;
+}
+.add-interest-buttons{
+    position: absolute;
+    right: -80px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+}
+.add-interest-confirm-icon{
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.add-interest-cancel-icon{
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+}
+.interests-container {
+    max-height: 100px;
+    width: 750px;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px;
+    gap: 5px;
+    padding: 10px;
+}
+
+.interest {
+    background-color: #FFEBFC;
+    padding: 5px;
+    border-radius: 300px;
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+}
+
+.interest span{
+    margin-right: 5px;
+}
+.interest .remove-interest-button{
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.send{
+    width: 300px;
+    height: auto;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.send:hover{
+    width: 250px;
+    height: auto;
 }

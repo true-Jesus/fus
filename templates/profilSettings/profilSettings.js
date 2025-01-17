@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", function() {
     const userPhoto = document.getElementById("userPhoto");
     const photoInput = document.getElementById("photoInput");
@@ -7,11 +8,17 @@ document.addEventListener("DOMContentLoaded", function() {
     const userWorkInput = document.getElementById("userWork");
     const userStudyInput = document.getElementById("userStudy");
     const userDescriptionInput = document.getElementById("userDescription");
+
     const userGenderSelect = document.getElementById("userGender");
     const userZodiacSelect = document.getElementById("userZodiac");
+
     const interestsContainer = document.getElementById("interestsContainer");
     const newInterestInput = document.getElementById("newInterestInput");
-    const addInterestButton = document.getElementById("addInterestButton");
+    const addInterestButton = document.getElementById("plus");
+    const addInterestModal = document.getElementById("addInterestModal");
+    const addInterestConfirm = document.getElementById("addInterestConfirm");
+    const addInterestCancel = document.getElementById("addInterestCancel");
+
     const saveButton = document.getElementById("saveButton");
 
     const userGender = document.getElementById("userGender");
@@ -23,16 +30,29 @@ document.addEventListener("DOMContentLoaded", function() {
     const zodiacModal = document.getElementById("zodiacModal");
     const zodiacButtons = document.querySelectorAll(".zodiac-button");
     const zodiacIcon = document.getElementById("zodiacIcon");
+
     genderModal.style.display = "none";
     zodiacModal.style.display = "none";
+
     userGender.addEventListener("click", function(){
         genderModal.style.display = genderModal.style.display === "block" ? "none" : "block";
     });
+    userZodiac.addEventListener("click", function(){
+        zodiacModal.style.display = zodiacModal.style.display === "block" ? "none" : "block";
+    });
+
     genderIcon.addEventListener("click", function(){
         userGender.style.display = "inline-block";
         genderIcon.style.display = "none";
         genderModal.style.display = "block";
     });
+    zodiacIcon.addEventListener("click", function(){
+        userZodiac.style.display = "inline-block";
+        zodiacIcon.style.display = "none";
+        zodiacModal.style.display = "block";
+
+    });
+
     genderButtons.forEach(button => {
         button.addEventListener("click", function() {
             const gender = button.getAttribute("data-gender");
@@ -40,6 +60,15 @@ document.addEventListener("DOMContentLoaded", function() {
             genderModal.style.display = "none";
         });
     });
+
+    zodiacButtons.forEach(button => {
+        button.addEventListener("click", function() {
+            const zodiac = button.getAttribute("data-zodiac");
+            userZodiacSelect.value = zodiac;
+            zodiacModal.style.display = "none";
+        });
+    });
+
     genderButtons.forEach(button => {
         button.addEventListener("click", function() {
             const gender = button.getAttribute("data-gender");
@@ -55,21 +84,6 @@ document.addEventListener("DOMContentLoaded", function() {
             userGender.style.display = "none";
         });
     });
-
-
-    userZodiac.addEventListener("click", function(){
-        zodiacModal.style.display = zodiacModal.style.display === "block" ? "none" : "block";
-    });
-
-    zodiacIcon.addEventListener("click", function(){
-        userZodiac.style.display = "inline-block";
-        zodiacIcon.style.display = "none";
-        zodiacModal.style.display = "none";
-
-    });
-
-
-
     zodiacButtons.forEach(button => {
         button.addEventListener("click", function() {
             const zodiac = button.getAttribute("data-zodiac");
@@ -106,7 +120,43 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+
     let interests = []; // Массив для хранения интересов
+    addInterestModal.style.display = "none";
+
+    // Функция для добавления интереса
+    function addInterest(interestText) {
+        if(interestText && interestText !== ""){
+            interests.push(interestText);
+            const interestElement = document.createElement("span");
+            interestElement.classList.add("interest");
+            interestElement.innerHTML = `<span>${interestText}</span><img src="/image/profil elements/cross.png" alt="Удалить" class="remove-interest-button">`;
+            interestsContainer.appendChild(interestElement);
+
+            const removeButton = interestElement.querySelector(".remove-interest-button");
+            removeButton.addEventListener("click", function(){
+                removeInterest(interestElement, interestText);
+            })
+        }
+    }
+    function removeInterest(interestElement, interestText){
+        interests = interests.filter(item => item !== interestText);
+        interestsContainer.removeChild(interestElement);
+    }
+
+    // Слушатель события на кнопку добавления интереса
+    addInterestButton.addEventListener("click", function() {
+        addInterestModal.style.display = addInterestModal.style.display === "block" ? "none" : "block";
+        addInterestButton.style.display = "none"
+    });
+
+    addInterestConfirm.addEventListener("click", function() {
+        addInterest(newInterestInput.value);
+    });
+    addInterestCancel.addEventListener("click", function() {
+        addInterestModal.style.display = "none";
+        addInterestButton.style.display = "inline-block"
+    });
 
     photoInput.addEventListener("change", function(){
         const file = photoInput.files[0];
@@ -119,66 +169,51 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
     });
-
-    // Функция для добавления интереса
-    function addInterest(interestText) {
-        if(interestText && interestText !== ""){
-            interests.push(interestText);
-            const interestElement = document.createElement("span");
-            interestElement.classList.add("interest");
-            interestElement.textContent = interestText;
-            interestsContainer.appendChild(interestElement);
-            newInterestInput.value = ""; // Очищаем input
-        }
-
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
     }
 
-
-    // Слушатель события на кнопку добавления интереса
-    addInterestButton.addEventListener("click", function() {
-        addInterest(newInterestInput.value);
-    });
-
-
-    // Функция для обработки нажатия на кнопку "Готово"
     saveButton.addEventListener("click", function() {
+        const user = getCookie('user')
         const userData = {
             photo: userPhoto.src,
             name: userNameInput.value,
             age: userAgeInput.value,
+            gender: userGenderSelect.value,
+            zodiac: userZodiacSelect.value,
             city: userCityInput.value,
             work: userWorkInput.value,
             study: userStudyInput.value,
             description: userDescriptionInput.value,
-            gender: userGenderSelect.value,
-            zodiac: userZodiacSelect.value,
-            interest: interests
+            interests: interests,
+            user: user
         };
-        // Сохраняем в localStorage
-        localStorage.setItem('userData', JSON.stringify(userData));
-        // перенаправляем на профиль пользователя
-        window.location.href = '../../templates/profil/profil.html';
 
-        console.log(userData);
+        fetch('/gaga', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        })
+            .then(response => {
+                if(response.ok){
+
+                } else{
+                    return response.text()
+                }
+            })
+            .then(data => {
+                // Отображаем ошибку пользователю
+                alert(data); // Или выведите сообщение другим способом
+            })
+            .catch(error => {
+                // Обработка ошибки регистрации
+                console.error('Ошибка при отправке данных:', error);
+                // Отобразите сообщение об ошибке пользователю
+            });
     });
-    // Загрузка данных из localStorage
-    const savedUserData = localStorage.getItem('userData');
-    if (savedUserData) {
-        const userData = JSON.parse(savedUserData);
-        if(userData.photo){
-            userPhoto.src = userData.photo;
-        }
-        userNameInput.value = userData.name;
-        userAgeInput.value = userData.age;
-        userCityInput.value = userData.city;
-        userWorkInput.value = userData.work;
-        userStudyInput.value = userData.study;
-        userDescriptionInput.value = userData.description;
-        userGenderSelect.value = userData.gender;
-        userZodiacSelect.value = userData.zodiac;
-        userData.interest.forEach(interest => {
-            addInterest(interest)
-        });
-    }
 
 });
