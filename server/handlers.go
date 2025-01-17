@@ -48,6 +48,7 @@ func NewRouter(h *Handlers) *mux.Router {
 			Route{Name: "Login", Method: http.MethodPost, Pattern: "/log", HandlerFunc: h.HandleLogin},
 			Route{Name: "Register", Method: http.MethodPost, Pattern: "/reg", HandlerFunc: h.HandleRegistration},
 			Route{Name: "RegistrPage", Method: http.MethodGet, Pattern: "/profil", HandlerFunc: h.ProfilePage, MiddlewareAuf: usecases.AuthMiddleware},
+			Route{Name: "RegistrPage", Method: http.MethodGet, Pattern: "/profilSettings", HandlerFunc: h.ProfilSettings, MiddlewareAuf: usecases.AuthMiddleware},
 		}
 	)
 	router := mux.NewRouter().StrictSlash(true)
@@ -120,6 +121,16 @@ func (h *Handlers) RegisterPage(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) ProfilPage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	htmlFile := "templates/profil/profil.html"
+	html, err := ioutil.ReadFile(htmlFile)
+	if err != nil {
+		log.Fatalf("Ошибка чтения файла: %v", err)
+	}
+
+	w.Write([]byte(html))
+}
+func (h *Handlers) ProfilSettings(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	htmlFile := "templates/profilSettings/profilSettings.html"
 	html, err := ioutil.ReadFile(htmlFile)
 	if err != nil {
 		log.Fatalf("Ошибка чтения файла: %v", err)
