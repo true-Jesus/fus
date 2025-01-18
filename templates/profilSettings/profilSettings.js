@@ -74,9 +74,9 @@ document.addEventListener("DOMContentLoaded", function() {
             const gender = button.getAttribute("data-gender");
             userGenderSelect.value = gender;
 
-            if(gender === "♂"){
+            if(gender === "man"){
                 genderIcon.src = "/image/profil elements/men.png";
-            }else if (gender === "♀"){
+            }else if (gender === "woman"){
                 genderIcon.src = "/image/profil elements/women.png";
             }
             genderIcon.style.display = "inline-block";
