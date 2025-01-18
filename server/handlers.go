@@ -16,10 +16,11 @@ type Routes []Route
 
 type UseCases struct {
 	aufUC *usecases.AufUseCase
+	proUC *usecases.ProfileUseCase
 }
 
-func NewUseCases(aufUC *usecases.AufUseCase) *UseCases {
-	return &UseCases{aufUC: aufUC}
+func NewUseCases(aufUC *usecases.AufUseCase, proUC *usecases.ProfileUseCase) *UseCases {
+	return &UseCases{aufUC: aufUC, proUC: proUC}
 }
 
 type Handlers struct {
@@ -47,8 +48,9 @@ func NewRouter(h *Handlers) *mux.Router {
 			Route{Name: "RegistrPage", Method: http.MethodGet, Pattern: "/regPg", HandlerFunc: h.RegisterPage},
 			Route{Name: "Login", Method: http.MethodPost, Pattern: "/log", HandlerFunc: h.HandleLogin},
 			Route{Name: "Register", Method: http.MethodPost, Pattern: "/reg", HandlerFunc: h.HandleRegistration},
-			Route{Name: "RegistrPage", Method: http.MethodGet, Pattern: "/profil", HandlerFunc: h.ProfilePage, MiddlewareAuf: usecases.AuthMiddleware},
-			Route{Name: "RegistrPage", Method: http.MethodGet, Pattern: "/profilSettings", HandlerFunc: h.ProfilSettings, MiddlewareAuf: usecases.AuthMiddleware},
+			Route{Name: "RegistrPage", Method: http.MethodGet, Pattern: "/profil", HandlerFunc: h.ProfilePage}, //, MiddlewareAuf: usecases.AuthMiddleware
+			Route{Name: "RegistrPage", Method: http.MethodGet, Pattern: "/profilSettings", HandlerFunc: h.ProfilSettings},
+			Route{Name: "saveSettings", Method: http.MethodPost, Pattern: "/saveSettings", HandlerFunc: h.SaveSettings},
 		}
 	)
 	router := mux.NewRouter().StrictSlash(true)
@@ -191,4 +193,35 @@ func (h *Handlers) HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, &cookie)
 	fmt.Fprintf(w, token)
+}
+func (h *Handlers) SaveSettings(w http.ResponseWriter, r *http.Request) {
+	var Data struct {
+		// photo todo узнать в каком формате принимать
+		Username    string   `json:"user"`
+		Name        string   `json:"name"`
+		Age         string   `json:"age"`
+		Gender      string   `json:"gender"`
+		Zodiac      string   `json:"zodiac"`
+		City        string   `json:"city"`
+		Work        string   `json:"work"`
+		Study       string   `json:"study"`
+		Description string   `json:"description"`
+		Interests   []string `json:"interests"`
+	}
+	// Декодируем JSON из тела запроса в структуру gradeData
+	fmt.Print(r.Body)
+	err := json.NewDecoder(r.Body).Decode(&Data)
+	if err != nil {
+		fmt.Println(err, "SaveSettings 1")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	fmt.Println("Полученные данные:", Data)
+	err = h.useCases.proUC.SetProfileSettings(Data.Username, Data.Name, Data.Age, Data.Gender, Data.Zodiac, Data.City, Data.Work, Data.Study, Data.Description, Data.Interests)
+	if err != nil {
+		fmt.Println(err, "SaveSettings 2")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	w.WriteHeader(http.StatusOK)
+
 }
