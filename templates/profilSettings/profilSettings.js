@@ -178,7 +178,6 @@ document.addEventListener("DOMContentLoaded", function() {
     saveButton.addEventListener("click", function() {
         const user = getCookie('user')
         const userData = {
-            photo: userPhoto.src,
             name: userNameInput.value,
             age: userAgeInput.value,
             gender: userGenderSelect.value,
@@ -191,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function() {
             user: user
         };
 
-        fetch('/gaga', {
+        fetch('/saveSettings', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

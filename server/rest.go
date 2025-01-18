@@ -15,8 +15,8 @@ func RunServer(db *sql.DB) error {
 	//create usecases
 
 	aufUc := usecases.NewAufUseCase(repoSql)
-
-	useCases := NewUseCases(aufUc)
+	proUc := usecases.NewProUseCase(repoSql)
+	useCases := NewUseCases(aufUc, proUc)
 	//create handlers
 	h := NewHandlers(useCases)
 
