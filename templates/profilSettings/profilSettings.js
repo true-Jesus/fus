@@ -152,6 +152,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
     addInterestConfirm.addEventListener("click", function() {
         addInterest(newInterestInput.value);
+        newInterestInput.value = "";
+        addInterestModal.style.display = "none";
+        addInterestButton.style.display = "inline-block"
     });
     addInterestCancel.addEventListener("click", function() {
         addInterestModal.style.display = "none";
@@ -174,44 +177,144 @@ document.addEventListener("DOMContentLoaded", function() {
         const parts = value.split(`; ${name}=`);
         if (parts.length === 2) return parts.pop().split(';').shift();
     }
+    // Функция для загрузки данных профиля
+    function loadProfile() {
+        const user = getCookie('user');
+        if (!user) {
+            console.error("User cookie not found");
+            return;
+        }
+        // Загрузка фото
+        fetch(`/getProfilePhoto?user=${user}`, { // добавили слэш в начало
+            method: 'GET',
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.arrayBuffer();
+                }
+                return Promise.reject('Ошибка загрузки фото');
+            })
+            .then(buffer => {
+                const blob = new Blob([buffer]);
+                const imageUrl = URL.createObjectURL(blob);
+                userPhoto.src = imageUrl;
+            })
+            .catch(error =>{
+                console.error('Ошибка при загрузке фото:', error)
+            });
 
-    saveButton.addEventListener("click", function() {
-        const user = getCookie('user')
-        const userData = {
-            name: userNameInput.value,
-            age: userAgeInput.value,
-            gender: userGenderSelect.value,
-            zodiac: userZodiacSelect.value,
-            city: userCityInput.value,
-            work: userWorkInput.value,
-            study: userStudyInput.value,
-            description: userDescriptionInput.value,
-            interests: interests,
-            user: user
-        };
-
-        fetch('/saveSettings', {
-            method: 'POST',
+        fetch(`/getProfile?user=${user}`, {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(userData)
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => { throw new Error(text) })
+
+                }
+                return response.json();
+            })
+            .then(data => {
+                userNameInput.value = data.username;
+                userAgeInput.value = data.age;
+                userCityInput.value = data.city;
+                userWorkInput.value = data.place_of_work;
+                userStudyInput.value = data.place_of_study;
+                userDescriptionInput.value = data.description;
+                userGenderSelect.value = data.gender;
+                userZodiacSelect.value = data.zodiac;
+                if(data.gender === "♂"){
+                    genderIcon.src = "/image/profil elements/men.png";
+                }else if (data.gender === "♀"){
+                    genderIcon.src = "/image/profil elements/women.png";
+                }
+                genderIcon.style.display = "inline-block";
+                userGender.style.display = "none";
+
+
+                if(data.zodiac === "Aquarius"){
+                    zodiacIcon.src = "/image/profil elements/Aquarius.png";
+                }else if (data.zodiac === "archer"){
+                    zodiacIcon.src = "/image/profil elements/archer.png";
+                }else if (data.zodiac === "Aries"){
+                    zodiacIcon.src = "/image/profil elements/Aries.png";
+                }else if (data.zodiac === "canser"){
+                    zodiacIcon.src = "/image/profil elements/canser.png";
+                }else if (data.zodiac === "Capricorn"){
+                    zodiacIcon.src = "/image/profil elements/Capricorn.png";
+                }else if (data.zodiac === "crorpion"){
+                    zodiacIcon.src = "/image/profil elements/crorpion.png";
+                }else if (data.zodiac === "Lion"){
+                    zodiacIcon.src = "/image/profil elements/Lion.png";
+                }else if (data.zodiac === "fish"){
+                    zodiacIcon.src = "/image/profil elements/fish.png";
+                }else if (data.zodiac === "Scales"){
+                    zodiacIcon.src = "/image/profil elements/Scales.png";
+                }else if (data.zodiac === "Taurus"){
+                    zodiacIcon.src = "/image/profil elements/Taurus.png";
+                }else if (data.zodiac === "Twins"){
+                    zodiacIcon.src = "/image/profil elements/Twins.png";
+                }else if (data.zodiac === "Virgo"){
+                    zodiacIcon.src = "/image/profil elements/Virgo.png";
+                }
+                zodiacIcon.style.display = "inline-block";
+                userZodiac.style.display = "none";
+                // Заполнение интересов
+                interestsContainer.innerHTML = "";
+                interests = [];
+                if(data.interests) {
+                    for(const key in data.interests) {
+                        addInterest(data.interests[key]);
+                    }
+                }
+
+            })
+            .catch(error => {
+                console.error('Ошибка при загрузке профиля:', error);
+                alert("Ошибка при загрузке профиля:" + error)
+            });
+    }
+
+    loadProfile(); // Загружаем данные профиля при загрузке страницы
+
+    saveButton.addEventListener("click", function() {
+        const user = getCookie('user');
+        const file = photoInput.files[0];
+
+        const formData = new FormData();
+
+        if (file){
+            formData.append('photo', file);
+        }
+        formData.append('user', user);
+        formData.append('name', userNameInput.value);
+        formData.append('age', userAgeInput.value);
+        formData.append('gender', userGenderSelect.value);
+        formData.append('zodiac', userZodiacSelect.value);
+        formData.append('city', userCityInput.value);
+        formData.append('work', userWorkInput.value);
+        formData.append('study', userStudyInput.value);
+        formData.append('description', userDescriptionInput.value);
+        formData.append('interests', JSON.stringify(interests));
+        fetch('/saveSettings', {
+            method: 'POST',
+            body: formData
         })
             .then(response => {
                 if(response.ok){
+                    alert("Данные успешно сохранены")
 
                 } else{
                     return response.text()
                 }
             })
             .then(data => {
-                // Отображаем ошибку пользователю
-                alert(data); // Или выведите сообщение другим способом
+                alert(data);
             })
             .catch(error => {
-                // Обработка ошибки регистрации
                 console.error('Ошибка при отправке данных:', error);
-                // Отобразите сообщение об ошибке пользователю
             });
     });
 
