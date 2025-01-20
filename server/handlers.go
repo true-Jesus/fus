@@ -6,9 +6,11 @@ import (
 	"fus/usecases"
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 )
 
@@ -51,6 +53,8 @@ func NewRouter(h *Handlers) *mux.Router {
 			Route{Name: "RegistrPage", Method: http.MethodGet, Pattern: "/profil", HandlerFunc: h.ProfilePage}, //, MiddlewareAuf: usecases.AuthMiddleware
 			Route{Name: "RegistrPage", Method: http.MethodGet, Pattern: "/profilSettings", HandlerFunc: h.ProfilSettings},
 			Route{Name: "saveSettings", Method: http.MethodPost, Pattern: "/saveSettings", HandlerFunc: h.SaveSettings},
+			Route{Name: "getProfil", Method: http.MethodGet, Pattern: "/getProfilePhoto", HandlerFunc: h.handleGetProfilePhoto},
+			Route{Name: "getProfil", Method: http.MethodGet, Pattern: "/getProfile", HandlerFunc: h.handleGetProfile},
 		}
 	)
 	router := mux.NewRouter().StrictSlash(true)
@@ -194,34 +198,196 @@ func (h *Handlers) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &cookie)
 	fmt.Fprintf(w, token)
 }
+
+//	func (h *Handlers) SaveSettings(w http.ResponseWriter, r *http.Request) {
+//		var Data struct {
+//			// photo todo узнать в каком формате принимать
+//			Username    string   `json:"user"`
+//			Name        string   `json:"name"`
+//			Age         string   `json:"age"`
+//			Gender      string   `json:"gender"`
+//			Zodiac      string   `json:"zodiac"`
+//			City        string   `json:"city"`
+//			Work        string   `json:"work"`
+//			Study       string   `json:"study"`
+//			Description string   `json:"description"`
+//			Interests   []string `json:"interests"`
+//		}
+//		// Декодируем JSON из тела запроса в структуру gradeData
+//		fmt.Print(r.Body)
+//		err := json.NewDecoder(r.Body).Decode(&Data)
+//		if err != nil {
+//			fmt.Println(err, "SaveSettings 1")
+//			http.Error(w, err.Error(), http.StatusBadRequest)
+//			return
+//		}
+//		fmt.Println("Полученные данные:", Data)
+//		err = h.useCases.proUC.SetProfileSettings(Data.Username, Data.Name, Data.Age, Data.Gender, Data.Zodiac, Data.City, Data.Work, Data.Study, Data.Description, Data.Interests)
+//		if err != nil {
+//			fmt.Println(err, "SaveSettings 2")
+//			http.Error(w, err.Error(), http.StatusInternalServerError)
+//		}
+//		w.WriteHeader(http.StatusOK)
+//
+// }
 func (h *Handlers) SaveSettings(w http.ResponseWriter, r *http.Request) {
-	var Data struct {
-		// photo todo узнать в каком формате принимать
-		Username    string   `json:"user"`
-		Name        string   `json:"name"`
-		Age         string   `json:"age"`
-		Gender      string   `json:"gender"`
-		Zodiac      string   `json:"zodiac"`
-		City        string   `json:"city"`
-		Work        string   `json:"work"`
-		Study       string   `json:"study"`
-		Description string   `json:"description"`
-		Interests   []string `json:"interests"`
-	}
-	// Декодируем JSON из тела запроса в структуру gradeData
-	fmt.Print(r.Body)
-	err := json.NewDecoder(r.Body).Decode(&Data)
-	if err != nil {
-		fmt.Println(err, "SaveSettings 1")
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	fname := ""
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
 	}
-	fmt.Println("Полученные данные:", Data)
-	err = h.useCases.proUC.SetProfileSettings(Data.Username, Data.Name, Data.Age, Data.Gender, Data.Zodiac, Data.City, Data.Work, Data.Study, Data.Description, Data.Interests)
+	err := r.ParseMultipartForm(10 << 20) // 10 MB limit
+	if err != nil {
+		http.Error(w, "Error parsing form", http.StatusBadRequest)
+		return
+	}
+
+	file, header, err := r.FormFile("photo")
+	if err != nil && err != http.ErrMissingFile {
+		fmt.Println(err)
+		http.Error(w, "Error retrieving photo", http.StatusBadRequest)
+		return
+	}
+	// Получаем имя пользователя из запроса
+	username := r.FormValue("user")
+	// Сохраняем файл, если он был отправлен
+	if file != nil {
+		defer file.Close()
+
+		// Генерируем имя файла с использованием имени пользователя
+		fileExt := filepath.Ext(header.Filename)
+		newFilename := fmt.Sprintf("photo%s%s", username, fileExt)
+		fname = newFilename
+		tempFile, err := os.CreateTemp("uploads", "image-*"+fileExt)
+		if err != nil {
+			log.Printf("error creating temp file : %v", err)
+			http.Error(w, "Error create temp file", http.StatusInternalServerError)
+			return
+		}
+		defer tempFile.Close()
+
+		_, err = io.Copy(tempFile, file)
+		if err != nil {
+			log.Printf("error saving file : %v", err)
+			http.Error(w, "Error saving file", http.StatusInternalServerError)
+			return
+		}
+
+		err = os.Rename(tempFile.Name(), "uploads/"+newFilename)
+		if err != nil {
+			log.Printf("error rename file : %v", err)
+			http.Error(w, "Error saving file", http.StatusInternalServerError)
+			return
+		}
+
+		fmt.Println("Photo uploaded successfully")
+	}
+
+	name := r.FormValue("name")
+	age := r.FormValue("age")
+	gender := r.FormValue("gender")
+	zodiac := r.FormValue("zodiac")
+	city := r.FormValue("city")
+	work := r.FormValue("work")
+	study := r.FormValue("study")
+	description := r.FormValue("description")
+	interestsJSON := r.FormValue("interests")
+	var interests []string
+	if err := json.Unmarshal([]byte(interestsJSON), &interests); err != nil {
+		log.Printf("error unmarshal json : %v", err)
+		http.Error(w, "Error unmarshal json", http.StatusInternalServerError)
+		return
+	}
+	err = h.useCases.proUC.SetProfileSettings(username, name, age, gender, zodiac, city, work, study, description, fname, interests)
 	if err != nil {
 		fmt.Println(err, "SaveSettings 2")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+
 	w.WriteHeader(http.StatusOK)
 
+}
+
+func (h *Handlers) handleGetProfilePhoto(w http.ResponseWriter, r *http.Request) {
+	username := r.URL.Query().Get("user")
+	if username == "" {
+		http.Error(w, "Необходимо передать имя пользователя", http.StatusBadRequest)
+		return
+	}
+
+	profileData, err := h.useCases.proUC.GetProfileData(username)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if profileData.Photopath == "" {
+		http.Error(w, "Фотография не найдена", http.StatusNotFound)
+		return
+	}
+
+	fullPath := "./" + profileData.Photopath //Ensure that photopath only contains relative path from your uploads folder
+	file, err := os.Open(fullPath)
+	if err != nil {
+		http.Error(w, "Фотография не найдена", http.StatusNotFound)
+		return
+	}
+	defer file.Close()
+
+	fileInfo, err := file.Stat()
+	if err != nil {
+		http.Error(w, "Фотография не найдена", http.StatusNotFound)
+		return
+	}
+
+	http.ServeContent(w, r, filepath.Base(fullPath), fileInfo.ModTime(), file)
+
+	return
+
+}
+
+func (h *Handlers) handleGetProfile(w http.ResponseWriter, r *http.Request) {
+	username := r.URL.Query().Get("user")
+	if username == "" {
+		http.Error(w, "Необходимо передать имя пользователя", http.StatusBadRequest)
+		return
+	}
+
+	profileData, err := h.useCases.proUC.GetProfileData(username)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Создаем новый тип, который будет содержать все поля, кроме Photopath
+	type ProfileDataWithoutPhoto struct {
+		Username     string            `json:"username"`
+		Nickname     string            `json:"nickname"`
+		Age          int               `json:"age"`
+		City         string            `json:"city"`
+		PlaceOfStudy string            `json:"place_of_study"`
+		PlaceOfWork  string            `json:"place_of_work"`
+		Gender       string            `json:"gender"`
+		Zodiac       string            `json:"zodiac"`
+		Description  string            `json:"description"`
+		Interests    map[string]string `json:"interests"`
+	}
+	fmt.Println(profileData.Interests)
+	profileDataWithoutPhoto := ProfileDataWithoutPhoto{
+		Username:     profileData.Username,
+		Nickname:     profileData.Nickname,
+		Age:          profileData.Age,
+		City:         profileData.City,
+		PlaceOfStudy: profileData.PlaceOfStudy,
+		PlaceOfWork:  profileData.PlaceOfWork,
+		Gender:       profileData.Gender,
+		Zodiac:       profileData.Zodiac,
+		Description:  profileData.Description,
+		Interests:    profileData.Interests,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(profileDataWithoutPhoto); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
