@@ -2,7 +2,6 @@ package repo
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"github.com/lib/pq"
 	"strconv"
@@ -80,39 +79,44 @@ func (r *Repo) SetProfileSettings(username, nickname, strAge, gender, zodiac, ci
 }
 
 type ProfileData struct {
-	Username     string            `json:"username"`
-	Nickname     string            `json:"nickname"`
-	Age          int               `json:"age"`
-	City         string            `json:"city"`
-	PlaceOfStudy string            `json:"place_of_study"`
-	PlaceOfWork  string            `json:"place_of_work"`
-	Gender       string            `json:"gender"`
-	Zodiac       string            `json:"zodiac"`
-	Description  string            `json:"description"`
-	Interests    map[string]string `json:"interests"`
-	Photopath    string            `json:"photopath"`
+	Username     string         `json:"username"`
+	Nickname     string         `json:"nickname"`
+	Age          int            `json:"age"`
+	City         string         `json:"city"`
+	PlaceOfStudy string         `json:"place_of_study"`
+	PlaceOfWork  string         `json:"place_of_work"`
+	Gender       string         `json:"gender"`
+	Zodiac       string         `json:"zodiac"`
+	Description  string         `json:"description"`
+	Interests    pq.StringArray `json:"interests"`
+	Photopath    string         `json:"photopath"`
 }
 
 func (r *Repo) GetProfileData(username string) (*ProfileData, error) {
-	query := `SELECT username, nickname, age, city, place_of_study, place_of_work, gender, zodiac, description, interests, photopath FROM profil WHERE username = $1`
+	var profil ProfileData
+	var interests pq.StringArray // создаем переменную для получения данных из бд
+	query := "SELECT username, nickname, age, city, place_of_study, place_of_work, gender, zodiac, description, interests, photopath FROM profil WHERE username = $1"
+
 	row := r.db.QueryRow(query, username)
-
-	profile := &ProfileData{}
-	var interestsStr string
-
-	err := row.Scan(&profile.Username, &profile.Nickname, &profile.Age, &profile.City, &profile.PlaceOfStudy, &profile.PlaceOfWork, &profile.Gender, &profile.Zodiac, &profile.Description, &interestsStr, &profile.Photopath)
-
-	if err == sql.ErrNoRows {
-		return nil, fmt.Errorf("профиль с именем пользователя '%s' не найден", username)
-	} else if err != nil {
-		return nil, fmt.Errorf("ошибка при выполнении запроса: %w", err)
-	}
-	if interestsStr != "" {
-		err = json.Unmarshal([]byte(interestsStr), &profile.Interests)
-		if err != nil {
-			return nil, fmt.Errorf("ошибка при распаковке интересов: %w", err)
+	err := row.Scan(
+		&profil.Username,
+		&profil.Nickname,
+		&profil.Age,
+		&profil.City,
+		&profil.PlaceOfStudy,
+		&profil.PlaceOfWork,
+		&profil.Gender,
+		&profil.Zodiac,
+		&profil.Description,
+		&interests, // Записываем массив в interests типа pq.StringArray
+		&profil.Photopath,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return &ProfileData{}, fmt.Errorf("user with username %s not found", username)
 		}
-
+		return &ProfileData{}, fmt.Errorf("error getting user: %w", err)
 	}
-	return profile, nil
+	profil.Interests = interests // присваиваем значения полю структуры, тип pq.StringArray автоматически преобразуется в []string
+	return &profil, nil
 }

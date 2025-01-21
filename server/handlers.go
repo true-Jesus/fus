@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"fus/usecases"
 	"github.com/gorilla/mux"
+	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 	"io"
 	"io/ioutil"
@@ -361,16 +362,16 @@ func (h *Handlers) handleGetProfile(w http.ResponseWriter, r *http.Request) {
 
 	// Создаем новый тип, который будет содержать все поля, кроме Photopath
 	type ProfileDataWithoutPhoto struct {
-		Username     string            `json:"username"`
-		Nickname     string            `json:"nickname"`
-		Age          int               `json:"age"`
-		City         string            `json:"city"`
-		PlaceOfStudy string            `json:"place_of_study"`
-		PlaceOfWork  string            `json:"place_of_work"`
-		Gender       string            `json:"gender"`
-		Zodiac       string            `json:"zodiac"`
-		Description  string            `json:"description"`
-		Interests    map[string]string `json:"interests"`
+		Username     string         `json:"username"`
+		Nickname     string         `json:"nickname"`
+		Age          int            `json:"age"`
+		City         string         `json:"city"`
+		PlaceOfStudy string         `json:"place_of_study"`
+		PlaceOfWork  string         `json:"place_of_work"`
+		Gender       string         `json:"gender"`
+		Zodiac       string         `json:"zodiac"`
+		Description  string         `json:"description"`
+		Interests    pq.StringArray `json:"interests"`
 	}
 	fmt.Println(profileData.Interests)
 	profileDataWithoutPhoto := ProfileDataWithoutPhoto{
