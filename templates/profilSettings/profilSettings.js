@@ -225,9 +225,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 userDescriptionInput.value = data.description;
                 userGenderSelect.value = data.gender;
                 userZodiacSelect.value = data.zodiac;
-                if(data.gender === "♂"){
+                if(data.gender === "man"){
                     genderIcon.src = "/image/profil elements/men.png";
-                }else if (data.gender === "♀"){
+                }else if (data.gender === "women"){
                     genderIcon.src = "/image/profil elements/women.png";
                 }
                 genderIcon.style.display = "inline-block";
