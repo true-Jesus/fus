@@ -20,7 +20,6 @@ heightBox.addEventListener("change", function () { ChangeBoxes(); });
 topBox.addEventListener("change", function () { ChangeBoxes(); });
 leftBox.addEventListener("change", function () { ChangeBoxes(); });
 
-saveBtn.addEventListener("click", function () { Save(); });
 
 canvas.addEventListener("mousedown", function (e) { MouseDown(e); });
 canvas.addEventListener("mousemove", function (e) { MouseMove(e); });
@@ -41,7 +40,7 @@ const image = document.getElementById("image");
 
 image.addEventListener("load", function () { Init(); });
 
-image.src = "uploads/photoКарлик.png";
+
 
 window.addEventListener("resize", function () { Init(); });
 
@@ -49,6 +48,7 @@ window.addEventListener("resize", function () { Init(); });
 
 function Init()
 {
+    image.src = document.getElementById("userPhoto").src;
     canvas.width = image.width;
     canvas.height = image.height;
 
@@ -188,7 +188,7 @@ function UpdateBoxes()
     leftBox.value = Math.round(selection.left);
 }
 
-function Save()
+function SavePhoto()
 {
     var xhr = new XMLHttpRequest();
 

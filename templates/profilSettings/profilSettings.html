@@ -139,8 +139,42 @@
 
         </div>
     </div>
+    <div class="modal" id="application" hidden="hidden">
 
+    <div id= "wrap" class="wrapper" >
+        <main class="main">
+            <div class="main__content">
+                <div class="avatar">
+                    <img id="image" class="image" src="" >
+                    <canvas id="canvas" class="canvas">
+                        Your browser does not support JS or HTML5!
+                    </canvas>
+                </div>
+
+                <p>
+                    <input type="number" name="widthBox" id="widthBox" value="400" min="400" title="Width">
+
+                    <input type="number" name="heightBox" id="heightBox" value="400" min="400" title="Height">
+                </p>
+                <p>
+                    <label>Top: <input type="number" name="topBox" id="topBox" value="0" min="0" title="Top"> </label><br><br>
+                    <label>Left:  <input type="number" name="leftBox" id="leftBox" value="0" min="0" title="Left"></label>
+                </p>
+                <p>
+                    <button class="button" id="saveBtn">Save</button>
+                </p>
+                <p>
+                    <button class="button" id="cancelBtn">Cancel</button>
+                </p>
+                <p>
+                    <a href="uploads/photoКарлик.png" target="_blank" class="a a_hidden" id="newImg">Open new photo</a>
+                </p>
+            </div>
+        </main>
+    </div>
+    </div>
     <script src="/templates/profilSettings/profilSettings.js"></script>
+    <script src="/templates/edit/edit.js"></script>
 </body>
 
 </html>

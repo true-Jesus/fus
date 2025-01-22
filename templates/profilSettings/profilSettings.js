@@ -31,6 +31,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const zodiacButtons = document.querySelectorAll(".zodiac-button");
     const zodiacIcon = document.getElementById("zodiacIcon");
 
+    const cancelButton = document.getElementById("cancelBtn");
+    const saveBtnPhoto = document.getElementById("saveBtn")
     genderModal.style.display = "none";
     zodiacModal.style.display = "none";
 
@@ -160,17 +162,30 @@ document.addEventListener("DOMContentLoaded", function() {
         addInterestModal.style.display = "none";
         addInterestButton.style.display = "inline-block"
     });
-
+    var usersrc =""
     photoInput.addEventListener("change", function(){
         const file = photoInput.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                // перенаправляем на страницу /editor и передаем src изображения
-                window.location.href = `/editor?imgSrc=${encodeURIComponent(e.target.result)}`;
+                usersrc = userPhoto.src
+                userPhoto.src = e.target.result;
+
             }
+
             reader.readAsDataURL(file);
+            Init();
+            document.getElementById("application").hidden = false
+
         }
+    });
+    saveBtnPhoto.addEventListener("click" , function (){
+        SavePhoto()
+    });
+    cancelButton.addEventListener("click", function() {
+        userPhoto.src = usersrc
+
+        document.getElementById("application").hidden = true
     });
     function getCookie(name) {
         const value = `; ${document.cookie}`;
