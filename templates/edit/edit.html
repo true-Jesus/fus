@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <title>JS Avatar Editor</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="/templates/edit/edit.css">
+</head>
+<body>
+<div class="wrapper">
+  <main class="main">
+    <div class="main__content">
+      <div class="avatar">
+        <img id="image" class="image">
+        <canvas id="canvas" class="canvas">
+          Your browser does not support JS or HTML5!
+        </canvas>
+      </div>
+
+      <p>
+        <input type="number" name="widthBox" id="widthBox" value="400" min="400" title="Width">
+
+        <input type="number" name="heightBox" id="heightBox" value="400" min="400" title="Height">
+      </p>
+      <p>
+        <label>Top: <input type="number" name="topBox" id="topBox" value="0" min="0" title="Top"> </label><br><br>
+        <label>Left:  <input type="number" name="leftBox" id="leftBox" value="0" min="0" title="Left"></label>
+      </p>
+      <p>
+        <button class="button" id="saveBtn">Save</button>
+      </p>
+      <p>
+        <a href="uploads/photoКарлик.png" target="_blank" class="a a_hidden" id="newImg">Open new photo</a>
+      </p>
+    </div>
+  </main>
+</div>
+<script type="text/javascript" src="/templates/edit/edit.js"></script>
+</body>
+</html>
