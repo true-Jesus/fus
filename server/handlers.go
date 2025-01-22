@@ -7,12 +7,16 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
+	"image"
+	"image/draw"
+	"image/jpeg"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 type Routes []Route
@@ -391,4 +395,111 @@ func (h *Handlers) handleGetProfile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+func (h *Handlers) EditorPage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	htmlFile := "templates/edit/edit.html"
+	html, err := ioutil.ReadFile(htmlFile)
+	if err != nil {
+		log.Fatalf("Ошибка чтения файла: %v", err)
+	}
+
+	w.Write([]byte(html))
+}
+
+func (h *Handlers) handleEditor(w http.ResponseWriter, r *http.Request) {
+	filename := "images/photo.jpg"
+
+	// Получаем параметры запроса из URL
+	widthStr := r.URL.Query().Get("width")
+	heightStr := r.URL.Query().Get("height")
+	topStr := r.URL.Query().Get("top")
+	leftStr := r.URL.Query().Get("left")
+	cwStr := r.URL.Query().Get("cw")
+	chStr := r.URL.Query().Get("ch")
+
+	if widthStr == "" || heightStr == "" || topStr == "" || leftStr == "" || cwStr == "" || chStr == "" {
+		http.Error(w, "Error: Missing parameters", http.StatusBadRequest)
+		return
+	}
+
+	// Конвертируем строковые параметры в числа
+	width, err := strconv.ParseFloat(widthStr, 64)
+	if err != nil {
+		http.Error(w, "Error: Invalid width parameter", http.StatusBadRequest)
+		return
+	}
+	height, err := strconv.ParseFloat(heightStr, 64)
+	if err != nil {
+		http.Error(w, "Error: Invalid height parameter", http.StatusBadRequest)
+		return
+	}
+	top, err := strconv.ParseFloat(topStr, 64)
+	if err != nil {
+		http.Error(w, "Error: Invalid top parameter", http.StatusBadRequest)
+		return
+	}
+	left, err := strconv.ParseFloat(leftStr, 64)
+	if err != nil {
+		http.Error(w, "Error: Invalid left parameter", http.StatusBadRequest)
+		return
+	}
+	cw, err := strconv.ParseFloat(cwStr, 64)
+	if err != nil {
+		http.Error(w, "Error: Invalid canvas width parameter", http.StatusBadRequest)
+		return
+	}
+	ch, err := strconv.ParseFloat(chStr, 64)
+	if err != nil {
+		http.Error(w, "Error: Invalid canvas height parameter", http.StatusBadRequest)
+		return
+	}
+
+	// Открываем изображение
+	file, err := os.Open(filename)
+	if err != nil {
+		http.Error(w, "Error: Could not open the file", http.StatusInternalServerError)
+		return
+	}
+	defer file.Close()
+
+	// Декодируем изображение
+	source, err := jpeg.Decode(file)
+	if err != nil {
+		http.Error(w, "Error: Could not decode the file", http.StatusInternalServerError)
+		return
+	}
+	sourceBounds := source.Bounds()
+	oldWidth := float64(sourceBounds.Dx())
+	oldHeight := float64(sourceBounds.Dy())
+
+	// Вычисляем новые размеры и позицию
+	newWidth := (width / cw) * oldWidth
+	newHeight := (height / ch) * oldHeight
+	newLeft := (left / cw) * oldWidth
+	newTop := (top / ch) * oldHeight
+
+	// Создаем новое изображение
+	newImage := image.NewRGBA(image.Rect(0, 0, int(newWidth), int(newHeight)))
+
+	// Заполняем новое изображение частью старого
+	draw.Draw(newImage, newImage.Bounds(), source, image.Point{int(newLeft), int(newTop)}, draw.Src)
+
+	// Сохраняем новое изображение
+	outFile, err := os.Create("images/newphoto.jpg")
+	if err != nil {
+		http.Error(w, "Error: Could not create the output file", http.StatusInternalServerError)
+		return
+	}
+	defer outFile.Close()
+
+	err = jpeg.Encode(outFile, newImage, nil)
+	if err != nil {
+		http.Error(w, "Error: Could not encode the file", http.StatusInternalServerError)
+		return
+	}
+
+	// Отправляем ответ
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, "ok")
 }

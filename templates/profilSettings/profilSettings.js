@@ -166,11 +166,11 @@ document.addEventListener("DOMContentLoaded", function() {
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                userPhoto.src = e.target.result;
+                // перенаправляем на страницу /editor и передаем src изображения
+                window.location.href = `/editor?imgSrc=${encodeURIComponent(e.target.result)}`;
             }
             reader.readAsDataURL(file);
         }
-
     });
     function getCookie(name) {
         const value = `; ${document.cookie}`;
