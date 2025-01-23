@@ -1,3 +1,4 @@
+
 //Холст и его контекст
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -12,7 +13,10 @@ const leftBox = document.getElementById("leftBox");
 const saveBtn = document.getElementById("saveBtn");
 
 //Ссылка на новое изображение
-const newImg = document.getElementById("newImg");
+//const newImg = document.getElementById("newImg"); // Удаляем, она не используется
+
+// Добавляем обработчик для кнопки сохранения
+saveBtn.addEventListener("click", SavePhoto);
 
 
 widthBox.addEventListener("change", function () { ChangeBoxes(); });
@@ -188,36 +192,64 @@ function UpdateBoxes()
     leftBox.value = Math.round(selection.left);
 }
 
-function SavePhoto()
-{
-    var xhr = new XMLHttpRequest();
+function SavePhoto() {
+    // Получаем URL изображения из атрибута src элемента userPhoto
+    const imageUrl = document.getElementById("userPhoto").src;
 
-    var params = "width=" + widthBox.value + "&height=" + heightBox.value + "&top=" + topBox.value + "&left=" + leftBox.value + "&cw=" + canvas.width + "&ch=" + canvas.height;
+    // Создаем объект FormData
+    const formData = new FormData();
 
-    xhr.open("GET", "http://localhost:8080/editor?" + params, true);
+    // Добавляем параметры обрезки
+    formData.append("width", widthBox.value);
+    formData.append("height", heightBox.value);
+    formData.append("top", topBox.value);
+    formData.append("left", leftBox.value);
+    formData.append("cw", canvas.width);
+    formData.append("ch", canvas.height);
 
-    xhr.onload = function ()
-    {
-        if (xhr.status != 200)
-        {
-            console.log(xhr.status + ": " + xhr.statusText);
-        }
-        else
-        {
-            console.log(xhr.responseText);
+    // Функция для загрузки изображения и отправки данных
+    function loadImageAndSendData(imageUrl) {
+        fetch(imageUrl)
+            .then(response => response.blob())
+            .then(blob => {
+                // Добавляем изображение как blob
+                formData.append("image", blob, "user_image.png");
 
-            if (xhr.responseText == "ok")
-            {
-                //  перенаправляем на страницу /profilSettings и передаем параметры
-                window.location.href = `/profilSettings?${params}`
+                // Отправляем данные на сервер
+                sendDataToServer(formData);
+            })
+            .catch(error => console.error('Error loading image:', error));
+    }
+
+    function sendDataToServer(formData) {
+        var xhr = new XMLHttpRequest();
+
+        xhr.open("POST", "http://localhost:8080/editer", true); // Изменен endpoint на "/crop"
+        xhr.responseType = "blob"; // Указываем, что ожидаем получить blob
+
+        xhr.onload = function () {
+            if (xhr.status != 200) {
+                console.log(xhr.status + ": " + xhr.statusText);
+            } else {
+                // Получаем Blob с обрезанным изображением
+                const croppedImageBlob = xhr.response;
+
+                // Создаем URL для Blob
+                const croppedImageUrl = URL.createObjectURL(croppedImageBlob);
+
+                // Обновляем src изображения на странице
+                document.getElementById("userPhoto").src = croppedImageUrl;
+                document.getElementById("application").hidden = true
+                console.log("Изображение успешно обновлено");
+
+
+                // Очистка URL
+                // URL.revokeObjectURL(croppedImageUrl);
             }
-            else
-            {
-                alert("Ошибка!");
-            }
-        }
-    };
-    xhr.send();
+        };
+
+        xhr.send(formData);
+    }
+
+    loadImageAndSendData(imageUrl);
 }
-
-

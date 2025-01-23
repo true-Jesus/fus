@@ -296,41 +296,72 @@ document.addEventListener("DOMContentLoaded", function() {
 
     saveButton.addEventListener("click", function() {
         const user = getCookie('user');
-        const file = photoInput.files[0];
+        const userPhoto = document.getElementById("userPhoto"); // Получаем элемент userPhoto
 
         const formData = new FormData();
 
-        if (file){
-            formData.append('photo', file);
+        if (userPhoto && userPhoto.src) {
+            // Получаем изображение как Blob
+            fetch(userPhoto.src)
+                .then(response => response.blob())
+                .then(blob => {
+                    // Добавляем изображение в FormData
+                    formData.append('photo', blob, "user_photo.jpeg"); // Можно задать имя файла
+
+                    // Добавляем остальные поля
+                    formData.append('user', user);
+                    formData.append('name', userNameInput.value);
+                    formData.append('age', userAgeInput.value);
+                    formData.append('gender', userGenderSelect.value);
+                    formData.append('zodiac', userZodiacSelect.value);
+                    formData.append('city', userCityInput.value);
+                    formData.append('work', userWorkInput.value);
+                    formData.append('study', userStudyInput.value);
+                    formData.append('description', userDescriptionInput.value);
+                    formData.append('interests', JSON.stringify(interests));
+
+                    // Отправляем данные
+                    sendDataToServer(formData);
+
+                })
+                .catch(error => {
+                    console.error('Ошибка при получении изображения:', error);
+                    alert('Не удалось получить фото')
+                });
         }
-        formData.append('user', user);
-        formData.append('name', userNameInput.value);
-        formData.append('age', userAgeInput.value);
-        formData.append('gender', userGenderSelect.value);
-        formData.append('zodiac', userZodiacSelect.value);
-        formData.append('city', userCityInput.value);
-        formData.append('work', userWorkInput.value);
-        formData.append('study', userStudyInput.value);
-        formData.append('description', userDescriptionInput.value);
-        formData.append('interests', JSON.stringify(interests));
-        fetch('/saveSettings', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => {
-                if(response.ok){
-                    alert("Данные успешно сохранены")
+        else {
+            formData.append('user', user);
+            formData.append('name', userNameInput.value);
+            formData.append('age', userAgeInput.value);
+            formData.append('gender', userGenderSelect.value);
+            formData.append('zodiac', userZodiacSelect.value);
+            formData.append('city', userCityInput.value);
+            formData.append('work', userWorkInput.value);
+            formData.append('study', userStudyInput.value);
+            formData.append('description', userDescriptionInput.value);
+            formData.append('interests', JSON.stringify(interests));
+            sendDataToServer(formData);
+        }
 
-                } else{
-                    return response.text()
-                }
+        function sendDataToServer(formData)
+        {
+            fetch('/saveSettings', {
+                method: 'POST',
+                body: formData
             })
-            .then(data => {
-                alert(data);
-            })
-            .catch(error => {
-                console.error('Ошибка при отправке данных:', error);
-            });
+                .then(response => {
+                    if(response.ok){
+                        alert("Данные успешно сохранены")
+                    } else{
+                        return response.text()
+                    }
+                })
+                .then(data => {
+                    alert(data);
+                })
+                .catch(error => {
+                    console.error('Ошибка при отправке данных:', error);
+                });
+        }
     });
-
 });
