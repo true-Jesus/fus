@@ -394,7 +394,6 @@ func (h *Handlers) handleGetProfile(w http.ResponseWriter, r *http.Request) {
 	// Создаем новый тип, который будет содержать все поля, кроме Photopath
 	type ProfileDataWithoutPhoto struct {
 		Username     string         `json:"username"`
-		Nickname     string         `json:"nickname"`
 		Age          int            `json:"age"`
 		City         string         `json:"city"`
 		PlaceOfStudy string         `json:"place_of_study"`
@@ -406,8 +405,7 @@ func (h *Handlers) handleGetProfile(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(profileData.Interests)
 	profileDataWithoutPhoto := ProfileDataWithoutPhoto{
-		Username:     profileData.Username,
-		Nickname:     profileData.Nickname,
+		Username:     profileData.Nickname,
 		Age:          profileData.Age,
 		City:         profileData.City,
 		PlaceOfStudy: profileData.PlaceOfStudy,
