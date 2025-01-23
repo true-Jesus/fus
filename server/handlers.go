@@ -272,14 +272,18 @@ func (h *Handlers) SaveSettings(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		defer tempFile.Close()
-
 		_, err = io.Copy(tempFile, file)
 		if err != nil {
 			log.Printf("error saving file : %v", err)
 			http.Error(w, "Error saving file", http.StatusInternalServerError)
 			return
 		}
-
+		err = tempFile.Close()
+		if err != nil {
+			log.Printf("error closing temp file : %v", err) // Обработайте ошибку соответствующим образом
+			http.Error(w, "Error closing temp file", http.StatusInternalServerError)
+			return
+		}
 		err = os.Rename(tempFile.Name(), "uploads/"+newFilename)
 		if err != nil {
 			log.Printf("error rename file : %v", err)

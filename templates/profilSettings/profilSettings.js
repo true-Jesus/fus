@@ -242,7 +242,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 userZodiacSelect.value = data.zodiac;
                 if(data.gender === "man"){
                     genderIcon.src = "/image/profil elements/men.png";
-                }else if (data.gender === "women"){
+                }else if (data.gender === "woman"){
                     genderIcon.src = "/image/profil elements/women.png";
                 }
                 genderIcon.style.display = "inline-block";
@@ -288,6 +288,7 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .catch(error => {
                 console.error('Ошибка при загрузке профиля:', error);
+                userPhoto.src = "/image/profil elements/photo.png"
                 alert("Ошибка при загрузке профиля:" + error)
             });
     }
@@ -364,4 +365,5 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
         }
     });
+
 });
