@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"fus/usecases"
@@ -60,6 +61,7 @@ func NewRouter(h *Handlers) *mux.Router {
 			Route{Name: "saveSettings", Method: http.MethodPost, Pattern: "/saveSettings", HandlerFunc: h.SaveSettings},
 			Route{Name: "getProfil", Method: http.MethodGet, Pattern: "/getProfilePhoto", HandlerFunc: h.handleGetProfilePhoto},
 			Route{Name: "getProfil", Method: http.MethodGet, Pattern: "/getProfile", HandlerFunc: h.handleGetProfile},
+			Route{Name: "editer", Method: http.MethodPost, Pattern: "/editer", HandlerFunc: h.handleEditor},
 		}
 	)
 	router := mux.NewRouter().StrictSlash(true)
@@ -327,21 +329,42 @@ func (h *Handlers) handleGetProfilePhoto(w http.ResponseWriter, r *http.Request)
 	}
 
 	if profileData.Photopath == "" {
-		http.Error(w, "Фотография не найдена", http.StatusNotFound)
+		fullPa := "./image/profil elements/photo.png"
+		fil, err := os.Open(fullPa)
+		if err != nil {
+			http.Error(w, "", http.StatusNotFound)
+			return
+		}
+		fileIn, err := fil.Stat()
+		http.ServeContent(w, r, filepath.Base(fullPa), fileIn.ModTime(), fil)
 		return
 	}
 
 	fullPath := "./" + profileData.Photopath //Ensure that photopath only contains relative path from your uploads folder
 	file, err := os.Open(fullPath)
 	if err != nil {
-		http.Error(w, "Фотография не найдена", http.StatusNotFound)
+		fullPa := "./image/profil elements/photo.png"
+		fil, err := os.Open(fullPa)
+		if err != nil {
+			http.Error(w, "", http.StatusNotFound)
+			return
+		}
+		fileIn, err := fil.Stat()
+		http.ServeContent(w, r, filepath.Base(fullPa), fileIn.ModTime(), fil)
 		return
 	}
 	defer file.Close()
 
 	fileInfo, err := file.Stat()
 	if err != nil {
-		http.Error(w, "Фотография не найдена", http.StatusNotFound)
+		fullPa := "./image/profil elements/photo.png"
+		fil, err := os.Open(fullPa)
+		if err != nil {
+			http.Error(w, "", http.StatusNotFound)
+			return
+		}
+		fileIn, err := fil.Stat()
+		http.ServeContent(w, r, filepath.Base(fullPa), fileIn.ModTime(), fil)
 		return
 	}
 
@@ -408,67 +431,77 @@ func (h *Handlers) EditorPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handlers) handleEditor(w http.ResponseWriter, r *http.Request) {
-	filename := "images/photo.jpg"
-
-	// Получаем параметры запроса из URL
-	widthStr := r.URL.Query().Get("width")
-	heightStr := r.URL.Query().Get("height")
-	topStr := r.URL.Query().Get("top")
-	leftStr := r.URL.Query().Get("left")
-	cwStr := r.URL.Query().Get("cw")
-	chStr := r.URL.Query().Get("ch")
-
-	if widthStr == "" || heightStr == "" || topStr == "" || leftStr == "" || cwStr == "" || chStr == "" {
-		http.Error(w, "Error: Missing parameters", http.StatusBadRequest)
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	// Конвертируем строковые параметры в числа
-	width, err := strconv.ParseFloat(widthStr, 64)
+	// 2. Разбираем multipart form data
+	err := r.ParseMultipartForm(10 << 20) // 10 MB limit for uploaded data
 	if err != nil {
-		http.Error(w, "Error: Invalid width parameter", http.StatusBadRequest)
-		return
-	}
-	height, err := strconv.ParseFloat(heightStr, 64)
-	if err != nil {
-		http.Error(w, "Error: Invalid height parameter", http.StatusBadRequest)
-		return
-	}
-	top, err := strconv.ParseFloat(topStr, 64)
-	if err != nil {
-		http.Error(w, "Error: Invalid top parameter", http.StatusBadRequest)
-		return
-	}
-	left, err := strconv.ParseFloat(leftStr, 64)
-	if err != nil {
-		http.Error(w, "Error: Invalid left parameter", http.StatusBadRequest)
-		return
-	}
-	cw, err := strconv.ParseFloat(cwStr, 64)
-	if err != nil {
-		http.Error(w, "Error: Invalid canvas width parameter", http.StatusBadRequest)
-		return
-	}
-	ch, err := strconv.ParseFloat(chStr, 64)
-	if err != nil {
-		http.Error(w, "Error: Invalid canvas height parameter", http.StatusBadRequest)
+		http.Error(w, "Error parsing form data", http.StatusBadRequest)
 		return
 	}
 
-	// Открываем изображение
-	file, err := os.Open(filename)
+	// 3. Получаем текстовые поля
+	width, err := strconv.ParseFloat(r.FormValue("width"), 64)
 	if err != nil {
-		http.Error(w, "Error: Could not open the file", http.StatusInternalServerError)
+		http.Error(w, "Error parsing width", http.StatusBadRequest)
+		return
+	}
+	height, err := strconv.ParseFloat(r.FormValue("height"), 64)
+	if err != nil {
+		http.Error(w, "Error parsing height", http.StatusBadRequest)
+		return
+	}
+	top, err := strconv.ParseFloat(r.FormValue("top"), 64)
+	if err != nil {
+		http.Error(w, "Error parsing top", http.StatusBadRequest)
+		return
+	}
+	left, err := strconv.ParseFloat(r.FormValue("left"), 64)
+	if err != nil {
+		http.Error(w, "Error parsing left", http.StatusBadRequest)
+		return
+	}
+	cw, err := strconv.ParseFloat(r.FormValue("cw"), 64)
+	if err != nil {
+		http.Error(w, "Error parsing cw", http.StatusBadRequest)
+		return
+	}
+	ch, err := strconv.ParseFloat(r.FormValue("ch"), 64)
+	if err != nil {
+		http.Error(w, "Error parsing ch", http.StatusBadRequest)
+		return
+	}
+
+	// 4. Получаем файл (изображение)
+
+	file, _, err := r.FormFile("image")
+	if err != nil {
+		http.Error(w, "Error reading file", http.StatusBadRequest)
 		return
 	}
 	defer file.Close()
 
+	// Открываем изображение
 	// Декодируем изображение
-	source, err := jpeg.Decode(file)
+	source, _, err := image.Decode(file)
 	if err != nil {
-		http.Error(w, "Error: Could not decode the file", http.StatusInternalServerError)
+		http.Error(w, "Error decoding image", http.StatusBadRequest)
 		return
 	}
+	// 6. Выполняем обрезку изображения
+	newImage, err := cropImage(source, width, height, top, left, cw, ch)
+	if err != nil {
+		http.Error(w, "Error cropping image", http.StatusInternalServerError)
+		return
+
+	}
+	sendImage(w, newImage)
+
+}
+func cropImage(source image.Image, width, height, top, left, cw, ch float64) (*image.RGBA, error) {
 	sourceBounds := source.Bounds()
 	oldWidth := float64(sourceBounds.Dx())
 	oldHeight := float64(sourceBounds.Dy())
@@ -485,21 +518,20 @@ func (h *Handlers) handleEditor(w http.ResponseWriter, r *http.Request) {
 	// Заполняем новое изображение частью старого
 	draw.Draw(newImage, newImage.Bounds(), source, image.Point{int(newLeft), int(newTop)}, draw.Src)
 
-	// Сохраняем новое изображение
-	outFile, err := os.Create("images/newphoto.jpg")
-	if err != nil {
-		http.Error(w, "Error: Could not create the output file", http.StatusInternalServerError)
-		return
-	}
-	defer outFile.Close()
-
-	err = jpeg.Encode(outFile, newImage, nil)
-	if err != nil {
-		http.Error(w, "Error: Could not encode the file", http.StatusInternalServerError)
+	return newImage, nil
+}
+func sendImage(w http.ResponseWriter, img image.Image) {
+	buffer := new(bytes.Buffer)
+	if err := jpeg.Encode(buffer, img, nil); err != nil {
+		http.Error(w, "Error encoding image", http.StatusInternalServerError)
 		return
 	}
 
-	// Отправляем ответ
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, "ok")
+	w.Header().Set("Content-Type", "image/jpeg")
+	w.Header().Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
+
+	if _, err := io.Copy(w, buffer); err != nil {
+		http.Error(w, "Error sending image", http.StatusInternalServerError)
+		return
+	}
 }
