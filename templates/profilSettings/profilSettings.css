@@ -98,19 +98,23 @@ header {
 }
 
 .profile-photo-container{
-    position: relative;
-    width: 150px;
-    height: 150px;
+    width: 180px;
+    height: 180px;
     border-radius: 50%;
     overflow: hidden;
-    margin-right: 15px;
-    display: inline-block;
     align-self: center;
-
+    margin-right: 15px;
 }
 
+.profile-photo{
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
+    display: block;
+}
 
-.profile-photo-default{
+.profile-photo img{
+    border-radius: 50%;
     width: 100%;
     height: auto;
     display: block;
@@ -151,7 +155,6 @@ header {
     color: white;
     border-color: #9A2867;
     border-style: solid;
-    padding: 10px 15px;
     cursor: pointer;
     border-radius: 50%;
     position: absolute;

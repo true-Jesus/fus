@@ -155,8 +155,7 @@ document.addEventListener("DOMContentLoaded", function() {
     addInterestConfirm.addEventListener("click", function() {
         addInterest(newInterestInput.value);
         newInterestInput.value = "";
-        addInterestModal.style.display = "none";
-        addInterestButton.style.display = "inline-block"
+        addInterestButton.style.display = "none"
     });
     addInterestCancel.addEventListener("click", function() {
         addInterestModal.style.display = "none";
