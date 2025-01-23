@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         if(userData.gender === "man"){
             genderIcon.src = "/image/profil elements/men.png";
-        }else if (userData.gender === "women"){
+        }else if (userData.gender === "woman"){
             genderIcon.src = "/image/profil elements/women.png";
         }
         genderIcon.style.display = "inline-block";
