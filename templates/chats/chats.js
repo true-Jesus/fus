@@ -143,6 +143,28 @@ document.addEventListener('DOMContentLoaded', function() {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
+    function addChatToList(chatName) {
+        const existingChat = Array.from(chatList.children).find(chatItem => {
+            return chatItem.querySelector('.username').textContent === chatName
+        });
+        if (!existingChat) {
+            const chatItem = document.createElement('div');
+            chatItem.classList.add('chat-item');
+            chatItem.innerHTML = `
+                <div class="user-icon">${chatName[0].toUpperCase()}</div>
+                <div class="user-info">
+                    <span class="username">${chatName}</span>
+                    <span class="last-message">Нет сообщений</span>
+                </div>
+            `;
+            chatItem.addEventListener('click', () => {
+                loadMessages(chatName);
+            });
+
+            chatList.appendChild(chatItem);
+        }
+    }
+
     const mockChats = [
         { name: 'Alice', lastMessage: 'Тоже все хорошо!' },
         { name: 'Bob', lastMessage: 'Рад тебя видеть!' },
@@ -151,23 +173,13 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
 
     mockChats.forEach(chat => {
-        const chatItem = document.createElement('div');
-        chatItem.classList.add('chat-item');
-        chatItem.innerHTML = `
-            <div class="user-icon">${chat.name[0].toUpperCase()}</div>
-            <div class="user-info">
-                <span class="username">${chat.name}</span>
-                <span class="last-message">${chat.lastMessage}</span>
-            </div>
-        `;
-        chatItem.addEventListener('click', () => {
-            loadMessages(chat.name);
-        });
-        chatList.appendChild(chatItem);
+        addChatToList(chat.name)
     });
+
 
     if (receiverName) {
         loadMessages(receiverName);
+        addChatToList(receiverName);
     }
 
     sendMessageButton.addEventListener('click', function() {
