@@ -1,0 +1,169 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #606F81;
+    color: white;
+    position: relative;
+    overflow-x: hidden;
+    align-items: center;
+}
+
+.background {
+    position: absolute;
+    top: 0;
+    left: 25%;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.background-image {
+    position: absolute;
+    z-index: -1;
+    width: 50%;
+    height: 100%;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    background-color: #485C74;
+    padding: 10px 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+
+}
+
+.header-container {
+    justify-content: center;
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    align-items: center;
+}
+
+.header-icons {
+    display: flex;
+    gap: 30px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.left-icons {
+    left: 37%;
+}
+
+.right-icons {
+    right: 37%;
+}
+
+.icon-link {
+    background-color: #FFEBFC;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.icon-link img {
+    width: 50px;
+    height: 50px;
+}
+
+.icon-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -25px;
+    z-index: 1;
+}
+
+.header-logo-image {
+    width: 160px;
+    height: auto;
+}
+
+.notifications-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+    margin: 150px auto;
+    padding-bottom: 40px;
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    background-color: #FFEBFC;
+    color: #9A2867;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 700px;
+    text-align: left;
+    text-decoration: none;
+}
+
+.mutual-like-item {
+    display: flex;
+    align-items: center;
+    background-color: #FFEBFC;
+    color: #9A2867;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 700px;
+    text-align: left;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.mutual-like-item:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.notification-icon {
+    width: 60px;
+    height: 60px;
+    margin-right: 15px;
+}
+
+.liked-notification .notification-text {
+    font-size: 22px;
+}
+
+.complaint-notification .notification-text {
+    font-size: 22px;
+}
+
+.no-notifications-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5em;
+    color: rgba(236, 236, 236, 0.51); /* Или любой другой цвет, который тебе подходит */
+}
