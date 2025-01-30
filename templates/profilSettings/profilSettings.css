@@ -521,6 +521,7 @@ header {
 /*EDIT*/
 
 .modal {
+    z-index: 2;
     width: 100%;
     height: 100%;
     margin: 0;
@@ -549,7 +550,7 @@ header {
 
 .modal  .main__content
 {
-    padding: 5px;
+    padding: 90px;
     text-align: center;
 }
 
@@ -587,38 +588,22 @@ header {
 
 .modal .button
 {
+    width: 300px;
+    height: auto;
     display: inline-block;
     vertical-align: middle;
-    margin: 5px;
-    background: #6694f6;
+    margin: 2px;
     border: 0;
-    border-radius: 15px;
-    padding: 10px 25px;
+    border-radius: 300px;
     color: #fff;
     cursor: pointer;
     box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    font-size: 16px;
 }
 
 .modal .button:hover
 {
-    background: #8acef1;
-}
-
-.modal .button_disabled
-{
-    background: #555;
-    cursor: not-allowed;
-}
-
-.modal .a, .a:visited
-{
-    color: #6694f6;
-}
-
-.modal .a:hover
-{
-    text-decoration: none;
+    width: 250px;
+    height: auto;
 }
 
 .modal .a_hidden
@@ -626,5 +611,9 @@ header {
     opacity: 0;
 }
 .modal #widthBox, #heightBox {
+    display: none;
+}
+
+.modal #topBox, #leftBox {
     display: none;
 }
