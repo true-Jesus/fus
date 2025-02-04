@@ -120,7 +120,7 @@ function loadUserData() {
         city: "Город",
         work: "Реснички делаю",
         study: "МГУ",
-        description: "Я люблю пить кока колу и кушац пиццу",
+        description: "Я люблю пить кока колу и кушац пиццу, еще люблю гулять вечерами по улице и боятся что меня скушает маньяк, но я ношу с собой перцовку, так что бойтесь",
         interests: ["Майнкрафт", "Майнкрафт", "Minecraft", "Minecraft", "Майнкрафт", "Майнкрафт", "Minecraft", "Minecraft", "Майнкрафт", "Майнкрафт"],
         photo: "../../image/ankets elements/userPhoto.jpg",
     };
