@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"fus/repo"
 	"fus/usecases"
 	"github.com/gorilla/mux"
 	"github.com/lib/pq"
@@ -23,12 +24,13 @@ import (
 type Routes []Route
 
 type UseCases struct {
-	aufUC *usecases.AufUseCase
-	proUC *usecases.ProfileUseCase
+	aufUC   *usecases.AufUseCase
+	proUC   *usecases.ProfileUseCase
+	anketUc *usecases.AnketsUC
 }
 
-func NewUseCases(aufUC *usecases.AufUseCase, proUC *usecases.ProfileUseCase) *UseCases {
-	return &UseCases{aufUC: aufUC, proUC: proUC}
+func NewUseCases(aufUC *usecases.AufUseCase, proUC *usecases.ProfileUseCase, anketUc *usecases.AnketsUC) *UseCases {
+	return &UseCases{aufUC: aufUC, proUC: proUC, anketUc: anketUc}
 }
 
 type Handlers struct {
@@ -62,6 +64,11 @@ func NewRouter(h *Handlers) *mux.Router {
 			Route{Name: "getProfil", Method: http.MethodGet, Pattern: "/getProfilePhoto", HandlerFunc: h.handleGetProfilePhoto},
 			Route{Name: "getProfil", Method: http.MethodGet, Pattern: "/getProfile", HandlerFunc: h.handleGetProfile},
 			Route{Name: "editer", Method: http.MethodPost, Pattern: "/editer", HandlerFunc: h.handleEditor},
+			Route{Name: "anket", Method: http.MethodGet, Pattern: "/anket", HandlerFunc: h.AnketesPage},
+			Route{Name: "getanket", Method: http.MethodGet, Pattern: "/getanket", HandlerFunc: h.handleGetProfileWithPhoto},
+			Route{Name: "images", Method: http.MethodGet, Pattern: "/images", HandlerFunc: h.handleImages},
+			Route{Name: "notice", Method: http.MethodGet, Pattern: "/notic", HandlerFunc: h.NoticePage},
+			Route{Name: "chats", Method: http.MethodGet, Pattern: "/listOfChats", HandlerFunc: h.ListOfChatsPage},
 		}
 	)
 	router := mux.NewRouter().StrictSlash(true)
@@ -90,9 +97,30 @@ func NewRouter(h *Handlers) *mux.Router {
 	router.PathPrefix("/templates/").Handler(http.StripPrefix("/templates/", http.FileServer(http.Dir(templatesPath))))
 	return router
 }
+
 func (h *Handlers) Homepage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	htmlFile := "templates/home/home.html"
+	html, err := ioutil.ReadFile(htmlFile)
+	if err != nil {
+		log.Fatalf("Ошибка чтения файла: %v", err)
+	}
+
+	w.Write([]byte(html))
+}
+func (h *Handlers) NoticePage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	htmlFile := "templates/notifications/notifications.html"
+	html, err := ioutil.ReadFile(htmlFile)
+	if err != nil {
+		log.Fatalf("Ошибка чтения файла: %v", err)
+	}
+
+	w.Write([]byte(html))
+}
+func (h *Handlers) ListOfChatsPage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	htmlFile := "templates/listOfChats/listOfChats.html"
 	html, err := ioutil.ReadFile(htmlFile)
 	if err != nil {
 		log.Fatalf("Ошибка чтения файла: %v", err)
@@ -134,6 +162,16 @@ func (h *Handlers) RegisterPage(w http.ResponseWriter, r *http.Request) {
 func (h *Handlers) ProfilPage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	htmlFile := "templates/profil/profil.html"
+	html, err := ioutil.ReadFile(htmlFile)
+	if err != nil {
+		log.Fatalf("Ошибка чтения файла: %v", err)
+	}
+
+	w.Write([]byte(html))
+}
+func (h *Handlers) AnketesPage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	htmlFile := "templates/ankets/ankets.html"
 	html, err := ioutil.ReadFile(htmlFile)
 	if err != nil {
 		log.Fatalf("Ошибка чтения файла: %v", err)
@@ -377,7 +415,9 @@ func (h *Handlers) handleGetProfilePhoto(w http.ResponseWriter, r *http.Request)
 	return
 
 }
+func (h *Handlers) handleGetUserId(w http.ResponseWriter, r *http.Request) {
 
+}
 func (h *Handlers) handleGetProfile(w http.ResponseWriter, r *http.Request) {
 	username := r.URL.Query().Get("user")
 	if username == "" {
@@ -536,4 +576,98 @@ func sendImage(w http.ResponseWriter, img image.Image) {
 		http.Error(w, "Error sending image", http.StatusInternalServerError)
 		return
 	}
+}
+
+type ProfileResponse struct {
+	Username     string         `json:"username"`
+	Age          int            `json:"age"`
+	City         string         `json:"city"`
+	PlaceOfStudy string         `json:"place_of_study"`
+	PlaceOfWork  string         `json:"place_of_work"`
+	Gender       string         `json:"gender"`
+	Zodiac       string         `json:"zodiac"`
+	Description  string         `json:"description"`
+	Interests    pq.StringArray `json:"interests"`
+	PhotoURL     string         `json:"photo_url,omitempty"`
+}
+
+func (h *Handlers) handleGetProfileWithPhoto(w http.ResponseWriter, r *http.Request) {
+	username := r.URL.Query().Get("user")
+	if username == "" {
+		http.Error(w, "Необходимо передать имя пользователя", http.StatusBadRequest)
+		return
+	}
+
+	profileData, err := h.useCases.anketUc.GetAnkets(username)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var photoURL string
+	if profileData.Photopath != "" {
+		photoURL = profileData.Photopath
+	} else {
+		photoURL = "/uploads/default.jpeg"
+	}
+
+	response := repo.ProfileData{
+		Nickname:     profileData.Nickname,
+		Username:     profileData.Username,
+		Age:          profileData.Age,
+		City:         profileData.City,
+		PlaceOfStudy: profileData.PlaceOfStudy,
+		PlaceOfWork:  profileData.PlaceOfWork,
+		Gender:       profileData.Gender,
+		Zodiac:       profileData.Zodiac,
+		Description:  profileData.Description,
+		Interests:    profileData.Interests,
+		Photopath:    photoURL,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+func (h *Handlers) handleImages(w http.ResponseWriter, r *http.Request) {
+	imagePath := r.URL.Query().Get("imagePath")
+	if imagePath == "" {
+		http.Error(w, "Необходимо передать имя пользователя", http.StatusBadRequest)
+		return
+	}
+	fmt.Println("aaa", imagePath)
+	if imagePath == "" {
+		http.NotFound(w, r)
+		return
+	}
+
+	//safePath := filepath.Clean(imagePath)
+	//if filepath.IsAbs(safePath) || strings.Contains(safePath, "..") {
+	//	http.Error(w, "Invalid image path", http.StatusBadRequest)
+	//	log.Printf("Attempted invalid image path: %s", imagePath)
+	//	return
+	//}
+
+	fullPath := filepath.Join("./", imagePath)
+	fmt.Println(fullPath)
+	file, err := os.Open(fullPath)
+	if err != nil {
+		log.Printf("Image not found: %s (resolved to %s)", imagePath, fullPath)
+		http.NotFound(w, r)
+		return
+	}
+	defer file.Close()
+
+	fileInfo, err := file.Stat()
+	if err != nil {
+		http.Error(w, "Error getting file info", http.StatusInternalServerError)
+		return
+	}
+
+	http.ServeContent(w, r, filepath.Base(fullPath), fileInfo.ModTime(), file)
+}
+func (h *Handlers) HandleSetAssess(w http.ResponseWriter, r *http.Request) {
+
 }
