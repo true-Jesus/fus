@@ -5,33 +5,41 @@ document.addEventListener('DOMContentLoaded', function() {
     const anketCard = document.querySelector('.anket-card');
     const anketContainer = document.querySelector('.anket-container');
     const expandButton = document.querySelector('.expand-button-container');
-
     const expandedAnketContainer = document.querySelector('.expanded-anket-container');
     const collapseButton = document.querySelector('.collapse-button-container');
 
-
-
     if (dislikeButton && likeButton && anketCard) {
-        loadUserData();
-        dislikeButton.addEventListener('click', function() {
-            animateOutAndIn(anketCard, anketContainer);
+        loadUserData().then(() => {  // Ждем завершения loadUserData
+            console.log("Начальное значение targname:", targname); // Отладка: проверяем начальное значение
+
+            dislikeButton.addEventListener('click', function() {
+                console.log("Нажат дизлайк. targname:", targname); // Отладка
+                handleAssessment(0);
+                animateOutAndIn(anketCard, anketContainer);
+
+            });
+
+            likeButton.addEventListener('click', function() {
+                console.log("Нажат лайк. targname:", targname); // Отладка
+                handleAssessment(1);
+                animateOutAndIn(anketCard, anketContainer);
+            });
         });
 
-        likeButton.addEventListener('click', function() {
-            animateOutAndIn(anketCard, anketContainer);
-        });
         expandButton.addEventListener('click', function() {
             showExpandedAnket(expandedAnketContainer, anketCard);
         });
         collapseButton.addEventListener('click', function() {
             hideExpandedAnket(expandedAnketContainer, anketCard);
         });
+    } else {
+        console.error("Один или несколько элементов не найдены!"); // Важно: обрабатываем отсутствующие элементы
     }
 });
 
+let targname = "Изначальное значение"; // Начальное значение. Скорее всего, не то, что вам нужно.
 
-function animateOutAndIn(anketCard, anketContainer)
-{
+function animateOutAndIn(anketCard, anketContainer) {
     anketCard.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
     anketCard.style.transform = 'translateY(-500px)';
     anketCard.style.opacity = '0';
@@ -49,7 +57,6 @@ function animateOutAndIn(anketCard, anketContainer)
         newAnket.style.opacity = '1';
         newAnket.style.transform = 'translateY(0)';
     }, 500);
-
 }
 
 function showExpandedAnket(expandedAnketContainer, anketCard) {
@@ -61,7 +68,6 @@ function hideExpandedAnket(expandedAnketContainer, anketCard) {
     anketCard.style.display = 'flex';
     expandedAnketContainer.style.display = 'none';
 }
-
 
 function createAnketElement() {
     const newCard = document.createElement('div');
@@ -113,19 +119,21 @@ function createAnketElement() {
 async function loadUserData() {
     const user = getCookie('user');
     if (!user) {
-        console.error("User cookie not found");
+        console.error("Cookie пользователя не найдена");
         return;
     }
     try {
         const response = await fetch(`/getanket?user=${user}`);
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP ошибка! Статус: ${response.status}`);
         }
         const userData = await response.json();
-        console.log(userData)
+        console.log("Данные пользователя загружены:", userData); // Отладка: проверяем данные
         const processedData = processUserData(userData);
+        targname = processedData.tname
         updateProfile(processedData);
         updateExpandedProfile(processedData);
+        console.log("targname после loadUserData:", targname); // Отладка
 
     } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
@@ -136,16 +144,18 @@ async function loadUserData() {
 async function loadUserDataForElement(card) {
     const user = getCookie('user');
     if (!user) {
-        console.error("User cookie not found");
+        console.error("Cookie пользователя не найдена");
         return;
     }
     try {
         const response = await fetch(`/getanket?user=${user}`);
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP ошибка! Статус: ${response.status}`);
         }
         const userData = await response.json();
+
         const processedData = processUserData(userData);
+        targname = processedData.tname
         updateProfileForElement(card, processedData);
         updateExpandedProfileForElement(card, processedData);
 
@@ -159,7 +169,7 @@ async function getImage(imagePath) {
     try {
         const response = await fetch(`/images?imagePath=${imagePath}`);
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP ошибка! Статус: ${response.status}`);
         }
         const blob = await response.blob();
         return URL.createObjectURL(blob);  // Создаем URL для отображения изображения
@@ -170,7 +180,9 @@ async function getImage(imagePath) {
 }
 
 function processUserData(userData) {
+
     return {
+        tname: userData.username,
         name: userData.nickname, // Используем nickname, если нужно
         age: userData.age,
         gender: getGenderImage(userData.gender), // Функция для получения пути к изображению пола
@@ -340,4 +352,38 @@ function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
+}
+async function handleAssessment(value) {
+    const user = getCookie('user');
+
+    if (!user) {
+        console.error("Cookie пользователя не найдена в handleAssessment");
+        return;
+    }
+
+    console.log("handleAssessment - Пользователь:", user, "Цель:", targname, "Оценка:", value);
+
+    try {
+        const response = await fetch('/assess', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' // Убедитесь, что заголовок Content-Type установлен
+            },
+            body: JSON.stringify({ // Преобразуем объект в строку JSON
+                username: user,
+                targetname: targname,
+                assessment: value.toString() // Преобразуем значение в строку, как ожидает сервер
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ошибка! Статус: ${response.status}`);
+        }
+
+        const responseData = await response.json(); // Разбираем JSON-ответ
+        console.log('Оценка отправлена успешно!', responseData);
+
+    } catch (error) {
+        console.error('Ошибка при отправке оценки:', error);
+    }
 }

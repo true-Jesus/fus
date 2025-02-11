@@ -17,3 +17,10 @@ func (a *AnketsUC) GetAnkets(user string) (*repo.ProfileData, error) {
 	}
 	return data, nil
 }
+func (a *AnketsUC) SetAssess(user, targetUser string, asses int) error {
+	err := a.repo.SetAssess(user, targetUser, asses)
+	if err != nil {
+		return err
+	}
+	return nil
+}

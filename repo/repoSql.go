@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/lib/pq"
 	"strconv"
+	"time"
 )
 
 type Repo struct {
@@ -165,4 +166,19 @@ func (r *Repo) FindMatchingProfile(username string) (*ProfileData, error) {
 	}
 
 	return &p, nil
+}
+func (r *Repo) SetAssess(user, targetUser string, asses int) error {
+	query :=
+		`INSERT INTO actions (user_username, target_username, action_type, created_at)
+  		 VALUES ($1, $2, $3, $4)`
+	currentTime := time.Now()
+
+	// Выполняем SQL-запрос
+	_, err := r.db.Exec(query, user, targetUser, asses, currentTime)
+	if err != nil {
+		return fmt.Errorf("ошибка при добавлении записи в actions: %w", err)
+	}
+
+	fmt.Println("Запись успешно добавлена в таблицу actions")
+	return nil
 }

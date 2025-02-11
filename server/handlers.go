@@ -69,6 +69,7 @@ func NewRouter(h *Handlers) *mux.Router {
 			Route{Name: "images", Method: http.MethodGet, Pattern: "/images", HandlerFunc: h.handleImages},
 			Route{Name: "notice", Method: http.MethodGet, Pattern: "/notic", HandlerFunc: h.NoticePage},
 			Route{Name: "chats", Method: http.MethodGet, Pattern: "/listOfChats", HandlerFunc: h.ListOfChatsPage},
+			Route{Name: "HandleSetAssess", Method: http.MethodPost, Pattern: "/assess", HandlerFunc: h.HandleSetAssess},
 		}
 	)
 	router := mux.NewRouter().StrictSlash(true)
@@ -668,6 +669,49 @@ func (h *Handlers) handleImages(w http.ResponseWriter, r *http.Request) {
 
 	http.ServeContent(w, r, filepath.Base(fullPath), fileInfo.ModTime(), file)
 }
-func (h *Handlers) HandleSetAssess(w http.ResponseWriter, r *http.Request) {
 
+type AssessmentRequest struct {
+	Username   string `json:"username"`
+	Targetname string `json:"targetname"`
+	Assessment string `json:"assessment"` // Делаем Assessment строкой здесь
+}
+
+func (h *Handlers) HandleSetAssess(w http.ResponseWriter, r *http.Request) {
+	// Проверяем, что Content-Type - application/json
+	if r.Header.Get("Content-Type") != "application/json" {
+		http.Error(w, "Content-Type должен быть application/json", http.StatusBadRequest)
+		return
+	}
+
+	// Декодируем данные JSON из тела запроса
+	var req AssessmentRequest
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&req)
+	if err != nil {
+		http.Error(w, "Ошибка декодирования JSON", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	// Преобразуем строку оценки в целое число
+	assess, err := strconv.Atoi(req.Assessment)
+	if err != nil {
+		http.Error(w, "Недопустимое значение оценки", http.StatusBadRequest)
+		return
+	}
+
+	// Логируем полученные данные для отладки
+	fmt.Println(req.Targetname, 4444, assess, req.Username)
+
+	// Вызываем функцию use case для установки оценки
+	err = h.useCases.anketUc.SetAssess(req.Username, req.Targetname, assess)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Ошибка установки оценки", http.StatusInternalServerError)
+		return
+	}
+
+	// Отправляем успешный ответ
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
 }
