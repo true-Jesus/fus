@@ -1,57 +1,63 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fusion</title>
     <link rel="stylesheet" href="/templates/home/home.css">
 </head>
+<body>
+<header>
+    <div class="header-container">
+        <div class="header-logo">
+            <img src="../../image/home elements/logo.png" alt="Логотип" class="header-logo-image">
+        </div>
+    </div>
+</header>
 
-    <header>
-        <div class="header-container">
+<div class="main-container">
+    <div class="bg-decor-container">
+        <img src="../../image/home elements/d1.png" alt="Декор 1" class="bg-decor bg-decor-left">
+        <img src="../../image/home elements/d2.png" alt="Декор 2" class="bg-decor bg-decor-right">
+    </div>
 
-            <div class="header-logo">
-                <img src="../../image/home elements/logo.png" alt="Логотип" class="header-logo-image">
+    <div class="content-wrapper">
+        <div class="left-column">
+            <div class="logo">
+                <img src="../../image/home elements/plashka.png" alt="Плашка" class="logo-image">
             </div>
-
-        </div>
-    </header>
-
-    <body>
-        <div class="bg-decor-container">
-            <img src="../../image/home elements/d1.png" alt="Декор 1" class="bg-decor bg-decor-left">
-            <img src="../../image/home elements/d2.png" alt="Декор 2" class="bg-decor bg-decor-right">
+            <div class="chat">
+                <img src="../../image/home elements/perepiska.png" alt="Переписка" class="chat-image">
+            </div>
         </div>
 
-        <div class = "logo">
-            <img src="../../image/home elements/plashka.png" alt="Плашка" class="logo-image">
+        <div class="center-column">
+            <div class="auth-forms">
+                <div class="auf">
+                    <img src="../../image/home elements/login.png" alt="Окно регистрации" class="auf-image">
+                </div>
+                <div class="auth-buttons">
+                    <a href="/regPg" class="button-register">
+                        <img src="../../image/home elements/reg.png" alt="регистрация" class="button-register-image">
+                    </a>
+                    <a href="/logPg" class="button-login">
+                        <img src="../../image/home elements/akk.png" alt="уже есть аккаунт" class="button-login-image">
+                    </a>
+                </div>
+            </div>
         </div>
 
-        <div class = "chat">
-            <img src="../../image/home elements/perepiska.png" alt="Переписка" class="chat-image">
+        <div class="right-column">
+            <div class="search">
+                <img src="../../image/home elements/poisk.png" alt="Поиск по интересам" class="search-image">
+            </div>
+            <div class="cloud">
+                <img src="../../image/home elements/oblako.png" alt="Облако интересов" class="cloud-image">
+            </div>
         </div>
+    </div>
+</div>
 
-        <div class = "search">
-            <img src="../../image/home elements/poisk.png" alt="Поиск по интересам" class="search-image">
-        </div>
-
-        <div class = "cloud">
-            <img src="../../image/home elements/oblako.png" alt="Облако интересов" class="cloud-image">
-        </div>
-
-        <div class = "auf">
-            <img src="../../image/home elements/login.png" alt="Окно регистрации" class="auf-image">
-        </div>
-
-        <a href="/regPg" class="button-register">
-            <img src="../../image/home elements/reg.png" alt="регистрация" class="button-register-image">
-        </a>
-
-        <a href="/logPg" class="button-login">
-            <img src="../../image/home elements/akk.png" alt="уже есть аккаунт" class = "button-login-image">
-        </a>
-
-        <script src="/templates/home/home.js"></script>
-    </body>
-
+<script src="/templates/home/home.js"></script>
+</body>
 </html>
