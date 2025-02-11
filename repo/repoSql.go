@@ -120,3 +120,49 @@ func (r *Repo) GetProfileData(username string) (*ProfileData, error) {
 	profil.Interests = interests // присваиваем значения полю структуры, тип pq.StringArray автоматически преобразуется в []string
 	return &profil, nil
 }
+
+func (r *Repo) FindMatchingProfile(username string) (*ProfileData, error) {
+	// SQL-запрос (аналогичен запросу, который мы обсуждали ранее)
+	query := `
+  SELECT
+   p2.username, p2.nickname, p2.age, p2.city, p2.place_of_study, p2.place_of_work,
+   p2.gender, p2.zodiac, p2.description, p2.interests, p2.photopath
+  FROM
+   profil p1
+  JOIN
+   users u1 ON p1.username = u1.username
+  JOIN
+   profil p2 ON p1.gender != p2.gender
+  JOIN
+   users u2 ON p2.username = u2.username
+  LEFT JOIN
+   actions a ON p1.username = a.user_username AND p2.username = a.target_username
+  WHERE
+   p1.username = $1
+   AND a.target_username IS NULL
+   AND p2.age IS NOT NULL  -- Обработка NULL значений возраста
+  ORDER BY
+   ABS(p1.age - p2.age)
+  LIMIT 1;
+ `
+
+	// Выполняем запрос
+	row := r.db.QueryRow(query, username)
+
+	// Сканируем результат в структуру Profil
+	var p ProfileData
+	err := row.Scan(
+		&p.Username, &p.Nickname, &p.Age, &p.City, &p.PlaceOfStudy, &p.PlaceOfWork,
+		&p.Gender, &p.Zodiac, &p.Description, &p.Interests, &p.Photopath,
+	)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// Не найдено подходящих профилей
+			return nil, nil // Возвращаем nil, nil, чтобы обозначить отсутствие результата
+		}
+		return nil, fmt.Errorf("ошибка при сканировании результата: %w", err)
+	}
+
+	return &p, nil
+}

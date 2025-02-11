@@ -110,41 +110,99 @@ function createAnketElement() {
 }
 
 
-function loadUserData() {
-    // Имитируем получение данных с сервера (замените на реальный запрос)
-    const userData = {
-        name: "Кристина",
-        age: 25,
-        gender: "../../image/profil elements/women.png",
-        zodiac: "../../image/profil elements/aries.png",
-        city: "Город",
-        work: "Реснички делаю",
-        study: "МГУ",
-        description: "Я люблю пить кока колу и кушац пиццу, еще люблю гулять вечерами по улице и боятся что меня скушает маньяк, но я ношу с собой перцовку, так что бойтесь",
-        interests: ["Майнкрафт", "Майнкрафт", "Minecraft", "Minecraft", "Майнкрафт", "Майнкрафт", "Minecraft", "Minecraft", "Майнкрафт", "Майнкрафт"],
-        photo: "../../image/ankets elements/userPhoto.jpg",
-    };
-    updateProfile(userData);
-    updateExpandedProfile(userData);
+async function loadUserData() {
+    const user = getCookie('user');
+    if (!user) {
+        console.error("User cookie not found");
+        return;
+    }
+    try {
+        const response = await fetch(`/getanket?user=${user}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const userData = await response.json();
+        console.log(userData)
+        const processedData = processUserData(userData);
+        updateProfile(processedData);
+        updateExpandedProfile(processedData);
+
+    } catch (error) {
+        console.error('Ошибка при загрузке данных:', error);
+        // Обработка ошибок (например, отображение сообщения об ошибке пользователю)
+    }
 }
 
+async function loadUserDataForElement(card) {
+    const user = getCookie('user');
+    if (!user) {
+        console.error("User cookie not found");
+        return;
+    }
+    try {
+        const response = await fetch(`/getanket?user=${user}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const userData = await response.json();
+        const processedData = processUserData(userData);
+        updateProfileForElement(card, processedData);
+        updateExpandedProfileForElement(card, processedData);
 
-function loadUserDataForElement(card) {
-    // Имитируем получение данных с сервера (замените на реальный запрос)
-    const userData = {
-        name: "Кристина",
-        age: 25,
-        gender: "../../image/profil elements/women.png",
-        zodiac: "../../image/profil elements/aries.png",
-        city: "Город",
-        work: "Реснички делаю",
-        study: "МГУ",
-        description: "Я люблю пить кока колу и кушац пиццу",
-        interests: ["Майнкрафт", "Майнкрафт", "Minecraft", "Minecraft", "Майнкрафт", "Майнкрафт", "Minecraft", "Minecraft", "Майнкрафт", "Майнкрафт"],
-        photo: "../../image/ankets elements/userPhoto.jpg",
+    } catch (error) {
+        console.error('Ошибка при загрузке данных:', error);
+        // Обработка ошибок (например, отображение сообщения об ошибке пользователю)
+    }
+}
+
+async function getImage(imagePath) {
+    try {
+        const response = await fetch(`/images?imagePath=${imagePath}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const blob = await response.blob();
+        return URL.createObjectURL(blob);  // Создаем URL для отображения изображения
+    } catch (error) {
+        console.error('Ошибка при загрузке изображения:', error);
+        return null; // Или какое-то изображение-заглушка
+    }
+}
+
+function processUserData(userData) {
+    return {
+        name: userData.nickname, // Используем nickname, если нужно
+        age: userData.age,
+        gender: getGenderImage(userData.gender), // Функция для получения пути к изображению пола
+        zodiac: getZodiacImage(userData.zodiac), // Функция для получения пути к изображению знака зодиака
+        city: userData.city,
+        work: userData.place_of_work, // Используйте правильное поле
+        study: userData.place_of_study, // Используйте правильное поле
+        description: userData.description,
+        interests: userData.interests,
+        photo:  `/images?imagePath=${userData.photopath}`
     };
-    updateProfileForElement(card, userData);
-    updateExpandedProfileForElement(card, userData);
+}
+
+function getGenderImage(gender) {
+    switch (gender) {
+        case 'men':
+            return '../../image/profil elements/men.png';
+        case 'woman':
+            return '../../image/profil elements/women.png';
+        default:
+            return '../../image/profil elements/other.png'; // Или другое изображение по умолчанию
+    }
+}
+
+function getZodiacImage(zodiac) {
+    switch (zodiac) {
+        case 'Aries':
+            return '../../image/profil elements/aries.png';
+        // Добавьте остальные знаки зодиака
+        default:
+            return '../../image/profil elements/zodiac_default.png'; // Или другое изображение по умолчанию
+    }
 }
 
 
@@ -277,4 +335,9 @@ function updateExpandedProfileForElement(card, data){
         button.textContent = interest;
         interestsContainer.appendChild(button);
     });
+}
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
 }

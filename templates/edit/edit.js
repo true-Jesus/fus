@@ -224,7 +224,7 @@ function SavePhoto() {
     function sendDataToServer(formData) {
         var xhr = new XMLHttpRequest();
 
-        xhr.open("POST", "http://localhost:8080/editer", true); // Изменен endpoint на "/crop"
+        xhr.open("POST", "/editer", true); // Изменен endpoint на "/crop"
         xhr.responseType = "blob"; // Указываем, что ожидаем получить blob
 
         xhr.onload = function () {
