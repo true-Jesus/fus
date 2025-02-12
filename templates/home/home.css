@@ -27,11 +27,11 @@ header {
 }
 
 .header-logo {
-    position: absolute;
+    position: fixed;
+    top: 0;
     left: 50%;
     transform: translateX(-50%);
     bottom: -58px;
-    z-index: 1;
 }
 
 .header-logo-image {
@@ -45,7 +45,6 @@ header {
     max-width: 1600px;
     margin: 0 auto;
 }
-
 .content-wrapper {
     display: flex;
     justify-content: space-between;
@@ -59,8 +58,22 @@ header {
     position: relative;
 }
 
+.left-column {
+    position: absolute;
+    top: 3rem;
+    left: -5rem;
+    width: 30%;
+}
+
+.right-column {
+    position: absolute;
+    bottom: -12rem;
+    right: -22rem;
+    width: 50%;
+}
+
 .center-column {
-    flex: 0 1 40%;
+    flex: 0 1 100%;
     display: flex;
     justify-content: center;
 }
@@ -77,16 +90,20 @@ header {
 
 .bg-decor {
     position: absolute;
-    max-width: 35%;
+    max-width: 100%;
     height: auto;
 }
 
 .bg-decor-left {
+    width: 35%;
+    height: 55%;
     top: 5%;
     left: 0;
 }
 
 .bg-decor-right {
+    width: 35%;
+    height: 50%;
     bottom: 0;
     right: 0;
 }
@@ -110,6 +127,7 @@ header {
     width: 100%;
     height: auto;
 }
+
 
 .auth-buttons {
     position: absolute;
