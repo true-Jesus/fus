@@ -95,3 +95,6 @@ function showComplaintNotification() {
 // showLikedNotification();
 // showMutualLikeNotification('Дмитрий');
 // showComplaintNotification();
+
+showLikedNotification();
+showMutualLikeNotification('Александр');
