@@ -26,6 +26,7 @@ header {
 }
 
 .header-container {
+    min-width: 1200px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -37,16 +38,17 @@ header {
 
 .header-icons {
     display: flex;
-    gap: clamp(15px, 3vw, 30px);
+    gap: clamp(3rem, 3vw, 30rem);
     align-items: center;
-    position: absolute;
+    position: fixed;
+
 }
 
 .header-logo {
-    position: absolute;
+    position: fixed;
     left: 50%;
     transform: translateX(-50%);
-    bottom: -2.5rem;
+    top: 0;
     z-index: 1;
 }
 
@@ -74,19 +76,23 @@ header {
 }
 
 .left-icons {
-    left: 20rem;
+    margin-left: 10rem;
+    left: 50vw;
 }
 
 .right-icons {
-    right: 20rem;
+    margin-right: 10rem;
+    right: 50vw;
 }
 
 .background {
+    background-size: contain;
     position: fixed;
     top: 0;
     left: 25%;
     width: 50vw;
     height: 100vh;
+    max-width: 100%;
     pointer-events: none;
     z-index: -1;
 }
