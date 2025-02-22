@@ -32,16 +32,57 @@
         </div>
 
         <div class="center-column">
-            <div class="auth-forms">
+            <!-- Начальный экран -->
+            <div class="auth-forms" id="mainScreen">
                 <div class="auf">
                     <img src="../../image/home elements/login.png" alt="Окно регистрации" class="auf-image">
                 </div>
                 <div class="auth-buttons">
-                    <a href="/regPg" class="button-register">
+                    <a href="#" class="button-register" onclick="showForm('register')">
                         <img src="../../image/home elements/reg.png" alt="регистрация" class="button-register-image">
                     </a>
-                    <a href="/logPg" class="button-login">
+                    <a href="#" class="button-login" onclick="showForm('login')">
                         <img src="../../image/home elements/akk.png" alt="уже есть аккаунт" class="button-login-image">
+                    </a>
+                </div>
+            </div>
+
+            <!-- Форма регистрации -->
+            <div class="auth-forms" id="registerForm" style="display: none;">
+                <div class="auf">
+                    <img src="../../image/home elements/login.png" alt="Окно регистрации" class="auf-image">
+                </div>
+                <div class="auth-buttons">
+                    <div class="container">
+                        <form id="regForm">
+                            <input type="text" id="regUsername" placeholder="Имя пользователя">
+                            <input type="password" id="regPassword" placeholder="Пароль">
+                            <button type="button" onclick="register()">Регистрация</button>
+                        </form>
+                    </div>
+
+                    <a href="#" class="button-login" onclick="showForm('login')">
+                        <img src="../../image/home elements/akk.png" alt="уже есть аккаунт" class="button-login-image">
+                    </a>
+                </div>
+            </div>
+
+            <!-- Форма входа -->
+            <div class="auth-forms" id="loginFormContainer" style="display: none;">
+                <div class="auf">
+                    <img src="../../image/home elements/login.png" alt="Окно регистрации" class="auf-image">
+                </div>
+                <div class="auth-buttons">
+                    <div class="container">
+                        <form id="loginForm">
+                            <input type="text" id="username" placeholder="Имя пользователя">
+                            <input type="password" id="password" placeholder="Пароль">
+                            <button type="button" onclick="login()">Вход</button>
+                        </form>
+                    </div>
+
+                    <a href="#" class="button-register" onclick="showForm('register')">
+                        <img src="../../image/home elements/reg.png" alt="регистрация" class="button-register-image">
                     </a>
                 </div>
             </div>
