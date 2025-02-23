@@ -5,75 +5,77 @@
     <meta charset="UTF-8">
     <title>Fusion чаты</title>
     <link rel="stylesheet" href="http://localhost:63342/templates/chats/chats.css">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
 </head>
-
-<header>
-    <div class="header-container">
-        <div class="header-icons left-icons">
-            <a href="/notic" class="icon-link">
-                <img src="../../image/common elements/like.png" alt="Лайк">
-            </a>
-            <a href="/anket" class="icon-link">
-                <img src="../../image/common elements/ankets.png" alt="Анкеты">
-            </a>
-        </div>
-
-        <div class="header-logo">
-            <img src="../../image/common elements/logo.png" alt="Логотип" class="header-logo-image">
-        </div>
-
-        <div class="header-icons right-icons">
-            <a href="/profil" class="icon-link">
-                <img src="../../image/common elements/profil.png" alt="Профиль">
-            </a>
-            <a href="/listOfChats" class="icon-link">
-                <img src="../../image/common elements/chats.png" alt="Чаты">
-            </a>
-        </div>
-    </div>
-</header>
 
 <body>
 
-    <div class="chat-page-container">
-        <div class="chat-list-container">
-            <button class="toggle-chat-list">
-                <img src="/image/chats elements/menu.png" alt="Сжать">
-            </button>
-            <div class="chat-list">
-                <!-- Список чатов будет добавлен сюда JavaScript -->
+    <header>
+        <div class="header-container">
+            <div class="header-icons left-icons">
+                <a href="/profil" class="icon-link">
+                    <img src="../../image/common elements/profil.png" alt="Профиль">
+                </a>
+                <a href="/listOfChats" class="icon-link">
+                    <img src="../../image/common elements/chats.png" alt="Чаты">
+                </a>
+            </div>
+
+            <div class="header-logo">
+                <img src="../../image/common elements/logo.png" alt="Логотип" class="header-logo-image">
+            </div>
+
+            <div class="header-icons right-icons">
+                <a href="/notic" class="icon-link">
+                    <img src="../../image/common elements/like.png" alt="Лайк">
+                </a>
+                <a href="/anket" class="icon-link">
+                    <img src="../../image/common elements/ankets.png" alt="Анкеты">
+                </a>
             </div>
         </div>
-        <div class="chat-area">
-            <div class="chat-header">
-                <h2 id="chatUserName">Имя</h2>
-            </div>
-            <div class="chat-messages">
-                <!-- Сообщения чата будут добавлены сюда JavaScript -->
-            </div>
-            <div class="chat-input">
-                <div class="chat-buttons">
-                    <img src="/image/chats elements/file.png" alt="Прикрепить файл" class="add-file-button">
-                    <input type="file" id="fileInput" style="display: none;">
-                    <img src="/image/chats elements/emoji.png" alt="Добавить смайлик" class="add-emoji-button">
-                    <div class="emoji-modal">
-                        <div class="emoji-modal-content"></div>
-                    </div>
-                </div>
-                <input type="text" id="messageInput" placeholder="Написать сообщение...">
-                <button id="sendMessageButton" class="send-message-button">
-                    <img src="/image/chats elements/send.png" alt="Отправить" >
+    </header>
+
+    <main>
+        <div class="chat-page-container">
+            <div class="chat-list-container">
+                <button class="toggle-chat-list">
+                    <img src="/image/chats elements/menu.png" alt="Сжать">
                 </button>
+                <div class="chat-list">
+                    <!-- Список чатов будет добавлен сюда JavaScript -->
+                </div>
+            </div>
+            <div class="chat-area">
+                <div class="chat-header">
+                    <h2 id="chatUserName">Имя</h2>
+                </div>
+                <div class="chat-messages">
+                    <!-- Сообщения чата будут добавлены сюда JavaScript -->
+                </div>
+                <div class="chat-input">
+                    <div class="chat-buttons">
+                        <img src="/image/chats elements/file.png" alt="Прикрепить файл" class="add-file-button">
+                        <input type="file" id="fileInput" style="display: none;">
+                        <img src="/image/chats elements/emoji.png" alt="Добавить смайлик" class="add-emoji-button">
+                        <div class="emoji-modal">
+                            <div class="emoji-modal-content"></div>
+                        </div>
+                    </div>
+                    <input type="text" id="messageInput" placeholder="Написать сообщение...">
+                    <button id="sendMessageButton" class="send-message-button">
+                        <img src="/image/chats elements/send.png" alt="Отправить" >
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="emoji-modal" style="display: none;">
-        <div class="emoji-modal-content">
-            <!-- Здесь будут эмодзи -->
+        <div class="emoji-modal" style="display: none;">
+            <div class="emoji-modal-content">
+                <!-- Здесь будут эмодзи -->
+            </div>
         </div>
-    </div>
-
+    </main>
 
 <script src="/templates/chats/chats.js"></script>
 </body>
