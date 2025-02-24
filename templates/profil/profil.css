@@ -1,9 +1,13 @@
+:root {
+    --header-height: 60px;
+    --icon-size: clamp(40px, 4vw, 60px);
+    --logo-width: clamp(120px, 16vw, 160px);
+}
+
 body {
     font-family: sans-serif;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
     min-height: 100vh;
     background-color: #606F81;
     color: white;
@@ -11,97 +15,98 @@ body {
     overflow-x: hidden;
 }
 
-.background{
-    position: absolute;
-    top: 0;
-    left: 25%;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.background-image{
-    position: absolute;
-    z-index: -1;
-    width: 50%;
-    height: 100%;
-
-}
-
 header {
     position: fixed;
     top: 0;
-    z-index: 100;
     width: 100%;
     background-color: #485C74;
-    padding: 10px 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 60px;
+    padding: 10px 20px;
+    height: var(--header-height);
+    z-index: 100;
 }
 
 .header-container {
-    width: 100%;
-    max-width: 1200px;
+    min-width: 1200px;
     display: flex;
+    justify-content: space-between;
     align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    height: 100%;
 }
 
 .header-icons {
     display: flex;
-    gap: 30px;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    gap: clamp(3rem, 3vw, 30rem);
+    align-items: center;
+    position: fixed;
+
 }
 
-.left-icons {
-    left: 37%;
+.header-logo {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 0;
+    z-index: 1;
 }
 
-.right-icons {
-    right: 37%;
+.header-logo-image {
+    width: var(--logo-width);
+    height: auto;
 }
 
 .icon-link {
     background-color: #FFEBFC;
-    width: 60px;
-    height: 60px;
+    width: var(--icon-size);
+    height: var(--icon-size);
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
     transition: background-color 0.3s ease;
 }
-
-.icon-link img {
-    width: 50px;
-    height: 50px;
-}
-
 .icon-link:hover {
     background-color: rgba(255, 255, 255, 0.2);
 }
-
-.header-logo {
-    display: flex;
-    align-items: center;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: -25px;
-    z-index: 1;
+.icon-link img {
+    width: calc(var(--icon-size) - 10px);
+    height: calc(var(--icon-size) - 10px);
 }
 
-.header-logo-image {
-    width: 160px;
-    height: auto;
+.left-icons {
+    margin-left: 10rem;
+    left: 50vw;
+}
+
+.right-icons {
+    margin-right: 10rem;
+    right: 50vw;
+}
+
+.background {
+    background-size: contain;
+    position: fixed;
+    top: 0;
+    left: 25%;
+    width: 50vw;
+    height: 100vh;
+    max-width: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.background-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .settings {
     background-color: #FFEBFC;
     width: 60px;
+    max-width: 60px;
     height: 60px;
     display: flex;
     align-items: center;
@@ -109,8 +114,8 @@ header {
     border-radius: 50%;
     transition: background-color 0.3s ease;
     position: absolute;
-    top: 10%;
-    right: 27%;
+    top: 0;
+    right: 20px;
 }
 
 .settings-image {
@@ -124,12 +129,12 @@ header {
 
 
 .profile-container {
-    border-radius: 15px;
-    padding: 20px;
-    max-width: 700px;
+    position: relative;
     width: 100%;
-    margin-top: 7%;
-    margin-left: 30%;
+    max-width: 800px;
+    margin: calc(var(--header-height) + 90px) auto 40px;
+    padding: 20px;
+
 }
 .profile-header{
     display: flex;
@@ -159,7 +164,6 @@ header {
     display: inline-block;
     position: relative;
     background-color: #FFEBFC;
-    padding: 5px;
     border-radius: 20px;
     margin-bottom: 5px;
     padding-left: 10px;
