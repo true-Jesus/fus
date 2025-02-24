@@ -41,7 +41,6 @@ header {
     gap: clamp(3rem, 3vw, 30rem);
     align-items: center;
     position: fixed;
-
 }
 
 .header-logo {
