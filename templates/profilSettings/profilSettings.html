@@ -5,16 +5,17 @@
     <meta charset="UTF-8">
     <title>Fusion настройка профиля</title>
     <link rel="stylesheet" href="/templates/profilSettings/profilSettings.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
 </head>
 
 <header>
     <div class="header-container">
         <div class="header-icons left-icons">
-            <a href="/notic" class="icon-link">
-                <img src="../../image/common elements/like.png" alt="Лайк">
+            <a href="/profil" class="icon-link">
+                <img src="../../image/common elements/profil.png" alt="Профиль">
             </a>
-            <a href="/anket" class="icon-link">
-                <img src="../../image/common elements/ankets.png" alt="Анкеты">
+            <a href="/listOfChats" class="icon-link">
+                <img src="../../image/common elements/chats.png" alt="Чаты">
             </a>
         </div>
 
@@ -23,11 +24,11 @@
         </div>
 
         <div class="header-icons right-icons">
-            <a href="/profil" class="icon-link">
-                <img src="../../image/common elements/profil.png" alt="Профиль">
+            <a href="/notic" class="icon-link">
+                <img src="../../image/common elements/like.png" alt="Лайк">
             </a>
-            <a href="/listOfChats" class="icon-link">
-                <img src="../../image/common elements/chats.png" alt="Чаты">
+            <a href="/anket" class="icon-link">
+                <img src="../../image/common elements/ankets.png" alt="Анкеты">
             </a>
         </div>
     </div>
@@ -45,6 +46,40 @@
                 <div class="photo-overlay">
                     <label for="photoInput" class="photo-button">Выбрать файл</label>
                     <input type="file" id="photoInput" accept="image/*" style="display: none;">
+                </div>
+            </div>
+            <div class = "choise-container">
+                <a class="icon-choise">
+                    <img src="../../image/profil elements/not selected.png" alt="Пол" id = "userGender">
+                    <img src="" alt="Иконка пола" id="genderIcon" class="gender-icon" style="display: none;">
+                </a>
+                <a class="icon-choise">
+                    <img src="../../image/profil elements/not selected.png" alt="Знак зодиака" id = "userZodiac">
+                    <img src="" alt="Иконка зодиака" id="zodiacIcon" class="zodiac-icon" style="display: none;">
+                </a>
+                <div class="gender-modal" id="genderModal">
+                    <img src="/image/profil elements/choiseGender.png" alt="Выберите пол" class="gender-modal-bg">
+                    <div class="gender-buttons">
+                        <img src="/image/profil elements/men.png" alt="Мужской" class="gender-button" data-gender="man">
+                        <img src="/image/profil elements/women.png" alt="Женский" class="gender-button" data-gender="woman">
+                    </div>
+                </div>
+                <div class="zodiac-modal" id="zodiacModal">
+                    <img src="/image/profil elements/choiseZodiac.png" alt="Выберите знак зодиака" class="zodiac-modal-bg">
+                    <div class="zodiac-buttons">
+                        <img src="/image/profil elements/Aquarius.png" alt="Водолей" class="zodiac-button" data-zodiac="Aquarius">
+                        <img src="/image/profil elements/archer.png" alt="Стрелец" class="zodiac-button" data-zodiac="archer">
+                        <img src="/image/profil elements/Aries.png" alt="Овен" class="zodiac-button" data-zodiac="Aries">
+                        <img src="/image/profil elements/canser.png" alt="Рак" class="zodiac-button" data-zodiac="canser">
+                        <img src="/image/profil elements/Capricorn.png" alt="Козерог" class="zodiac-button" data-zodiac="Capricorn">
+                        <img src="/image/profil elements/crorpion.png" alt="Скорпион" class="zodiac-button" data-zodiac="crorpion">
+                        <img src="/image/profil elements/fish.png" alt="Рыбы" class="zodiac-button" data-zodiac="fish">
+                        <img src="/image/profil elements/Lion.png" alt="Лев" class="zodiac-button" data-zodiac="Lion">
+                        <img src="/image/profil elements/Scales.png" alt="Весы" class="zodiac-button" data-zodiac="Scales">
+                        <img src="/image/profil elements/Taurus.png" alt="Телец" class="zodiac-button" data-zodiac="Taurus">
+                        <img src="/image/profil elements/Twins.png" alt="Близнецы" class="zodiac-button" data-zodiac="Twins">
+                        <img src="/image/profil elements/Virgo.png" alt="Дева" class="zodiac-button" data-zodiac="Virgo">
+                    </div>
                 </div>
             </div>
             <div class="name-age-container">
@@ -79,41 +114,6 @@
                 </div>
                 <div class="profile-about">
                     <textarea id="userDescription" placeholder="Напишите что-нибудь о себе" class = "profile-about-text"></textarea>
-                </div>
-            </div>
-
-            <div class = "choise-container">
-                <a class="icon-choise">
-                    <img src="../../image/profil elements/not selected.png" alt="Пол" id = "userGender">
-                    <img src="" alt="Иконка пола" id="genderIcon" class="gender-icon" style="display: none;">
-                </a>
-                <a class="icon-choise">
-                    <img src="../../image/profil elements/not selected.png" alt="Знак зодиака" id = "userZodiac">
-                    <img src="" alt="Иконка зодиака" id="zodiacIcon" class="zodiac-icon" style="display: none;">
-                </a>
-                <div class="gender-modal" id="genderModal">
-                    <img src="/image/profil elements/choiseGender.png" alt="Выберите пол" class="gender-modal-bg">
-                    <div class="gender-buttons">
-                        <img src="/image/profil elements/men.png" alt="Мужской" class="gender-button" data-gender="man">
-                        <img src="/image/profil elements/women.png" alt="Женский" class="gender-button" data-gender="woman">
-                    </div>
-                </div>
-                <div class="zodiac-modal" id="zodiacModal">
-                    <img src="/image/profil elements/choiseZodiac.png" alt="Выберите знак зодиака" class="zodiac-modal-bg">
-                    <div class="zodiac-buttons">
-                        <img src="/image/profil elements/Aquarius.png" alt="Водолей" class="zodiac-button" data-zodiac="Aquarius">
-                        <img src="/image/profil elements/archer.png" alt="Стрелец" class="zodiac-button" data-zodiac="archer">
-                        <img src="/image/profil elements/Aries.png" alt="Овен" class="zodiac-button" data-zodiac="Aries">
-                        <img src="/image/profil elements/canser.png" alt="Рак" class="zodiac-button" data-zodiac="canser">
-                        <img src="/image/profil elements/Capricorn.png" alt="Козерог" class="zodiac-button" data-zodiac="Capricorn">
-                        <img src="/image/profil elements/crorpion.png" alt="Скорпион" class="zodiac-button" data-zodiac="crorpion">
-                        <img src="/image/profil elements/fish.png" alt="Рыбы" class="zodiac-button" data-zodiac="fish">
-                        <img src="/image/profil elements/Lion.png" alt="Лев" class="zodiac-button" data-zodiac="Lion">
-                        <img src="/image/profil elements/Scales.png" alt="Весы" class="zodiac-button" data-zodiac="Scales">
-                        <img src="/image/profil elements/Taurus.png" alt="Телец" class="zodiac-button" data-zodiac="Taurus">
-                        <img src="/image/profil elements/Twins.png" alt="Близнецы" class="zodiac-button" data-zodiac="Twins">
-                        <img src="/image/profil elements/Virgo.png" alt="Дева" class="zodiac-button" data-zodiac="Virgo">
-                    </div>
                 </div>
             </div>
 

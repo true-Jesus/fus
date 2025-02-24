@@ -5,9 +5,9 @@ function showForm(formType) {
     document.getElementById('loginFormContainer').style.display = 'none';
 
     // Показываем нужную форму
-    if (formType === 'register') {
+    if (formType === 'registerForm') {
         document.getElementById('registerForm').style.display = 'block';
-    } else if (formType === 'login') {
+    } else if (formType === 'loginFormContainer') {
         document.getElementById('loginFormContainer').style.display = 'block';
     } else {
         document.getElementById('mainScreen').style.display = 'block';
