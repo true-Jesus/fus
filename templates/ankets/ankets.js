@@ -198,22 +198,39 @@ function processUserData(userData) {
 
 function getGenderImage(gender) {
     switch (gender) {
-        case 'men':
+        case 'man':
             return '../../image/profil elements/men.png';
         case 'woman':
             return '../../image/profil elements/women.png';
-        default:
-            return '../../image/profil elements/other.png'; // Или другое изображение по умолчанию
     }
 }
 
 function getZodiacImage(zodiac) {
     switch (zodiac) {
         case 'Aries':
-            return '../../image/profil elements/aries.png';
-        // Добавьте остальные знаки зодиака
-        default:
-            return '../../image/profil elements/zodiac_default.png'; // Или другое изображение по умолчанию
+            return '../../image/profil elements/Aries.png';
+        case 'Aquarius':
+            return '../../image/profil elements/Aquarius.png';
+        case 'archer':
+            return '../../image/profil elements/archer.png';
+        case 'canser':
+            return '../../image/profil elements/canser.png';
+        case 'Capricorn':
+            return '../../image/profil elements/Capricorn.png';
+        case 'crorpion':
+            return '../../image/profil elements/crorpion.png';
+        case 'Lion':
+            return '../../image/profil elements/Lion.png';
+        case 'fish':
+            return '../../image/profil elements/fish.png';
+        case 'Scales':
+            return '../../image/profil elements/Scales.png';
+        case 'Taurus':
+            return '../../image/profil elements/Taurus.png';
+        case 'Twins':
+            return '../../image/profil elements/Twins.png';
+        case 'Virgo':
+            return '../../image/profil elements/Virgo.png';
     }
 }
 
