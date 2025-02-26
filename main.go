@@ -1,12 +1,10 @@
 package main
 
 import (
-	"database/sql"
 	"fus/repo"
 	"fus/server"
 	"log"
 	"net/http"
-	"os"
 
 	"fus/chat"
 	_ "fus/chat"
@@ -18,35 +16,6 @@ import (
 // aa
 func main() {
 	log.SetFlags(log.Lshortfile)
-
-	// Подключение к базе данных PostgreSQL для чата
-	dbURL := os.Getenv("DATABASE_URL") // Получаем URL базы данных из переменной окружения
-
-	if dbURL == "" {
-		dbURL = "host=localhost user=admin password=1233 dbname=chat port=5432 sslmode=disable"
-	}
-
-	dbChat, err := sql.Open("postgres", dbURL)
-	if err != nil {
-		log.Fatalf("Failed to connect to chat database: %v", err)
-	}
-	defer dbChat.Close()
-
-	// Проверка соединения с базой данных для чата
-	err = dbChat.Ping()
-	if err != nil {
-		log.Fatalf("Failed to ping chat database: %v", err)
-	}
-	log.Println("Connected to PostgreSQL chat database")
-
-	// Создание таблиц для чата (если их еще нет)
-	chat.CreateTables(dbChat)
-
-	// websocket server
-	chatServer := chat.NewServer("/entry", dbChat) // Передаем соединение с БД в конструктор сервера
-	go chatServer.Listen()                         // Запускаем сервер в отдельной горутине
-
-	// Подключение к базе данных PostgreSQL для fus
 	dbFus, err := repo.ConnectToDB()
 	if err != nil {
 		log.Fatalf("Failed to connect to fus: %v", err)
@@ -59,6 +28,13 @@ func main() {
 		log.Fatalf("Failed to ping fus database: %v", err)
 	}
 	log.Println("Connected to PostgreSQL fus database")
+
+	// Создание таблиц для чата (если их еще нет)
+	chat.CreateTables(dbFus)
+
+	// websocket server
+	chatServer := chat.NewServer("/entry", dbFus) // Передаем соединение с БД в конструктор сервера
+	go chatServer.Listen()                        // Запускаем сервер в отдельной горутине
 
 	// Запуск fus
 	go server.RunFusServer(dbFus)

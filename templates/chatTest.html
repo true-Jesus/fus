@@ -120,7 +120,7 @@
             websocket.close();
         }
 
-        const wsUrl = `ws/entry?room=${room}`;  // Относительный URL (изменено!)
+        const wsUrl = `ws://localhost:8081/entry?room=${room}`;
         websocket = new WebSocket(wsUrl);
         websocket.room = room; // Сохраняем текущую комнату
 

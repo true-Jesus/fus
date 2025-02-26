@@ -17,7 +17,8 @@ func RunFusServer(db *sql.DB) error {
 	aufUc := usecases.NewAufUseCase(repoSql)
 	proUc := usecases.NewProUseCase(repoSql)
 	anketUc := usecases.NewAnketsUC(repoSql)
-	useCases := NewUseCases(aufUc, proUc, anketUc)
+	chatUc := usecases.NewChatUseCase(repoSql)
+	useCases := NewUseCases(aufUc, proUc, anketUc, chatUc)
 	//create handlers
 	h := NewHandlers(useCases)
 
