@@ -81,33 +81,29 @@
                 </div>
             </div>
         </div>
-
-        <div class="expanded-anket-container" style="display: none;">
-            <div class="expanded-anket-card">
+    </div>
+</main>
+    <div class="expanded-anket-container" style="display: none;">
+        <div class="expanded-background">
+            <img src="../../image/ankets elements/back.png" alt="фон" class="expanded-background-image">
+        </div>
+        <div class="expanded-anket-card">
+            <!-- Левый блок: фото и кнопки -->
+            <div class="expanded-left-section">
+                <!-- Фото пользователя -->
                 <div class="expanded-image-container">
                     <img src="" alt="Фото пользователя" class="expanded-user-photo">
                 </div>
-                <div class="expanded-profile-info">
-                    <div class="expanded-name-info-container">
-                        <span class="expanded-name-info expanded-user-name"></span> <span class="expanded-name-info expanded-user-age"></span> <img class="expanded-user-gender" src="" alt="Пол"> <img class="expanded-user-zodiac" src="" alt="Знак зодиака">
-                    </div>
-                    <div class="expanded-location-info">
-                        <img src="../../image/profil elements/sity.png" alt="Город"> <span class="expanded-user-city"></span>
-                    </div>
-                    <div class="expanded-work-info">
-                        <img src="../../image/profil elements/work.png" alt="Работа"> <span class="expanded-user-work"></span>
-                    </div>
-                    <div class="expanded-study-info">
-                        <img src="../../image/profil elements/study.png" alt="Учёба"> <span class="expanded-user-study"></span>
-                    </div>
-                </div>
-                <div class="expanded-description expanded-user-description">
 
-                </div>
-                <div class="expanded-interests">
-
-                </div>
+                <!-- Кнопки -->
                 <div class="expanded-anket-actions">
+                    <!-- Кнопка "Свернуть" -->
+                    <div class="collapse-button-container">
+                        <img src="../../image/ankets elements/left.png" alt="Свернуть" class="collapse-button">
+                        <span class="collapse-text">Свернуть</span>
+                    </div>
+
+                    <!-- Кнопки "Дизлайк" и "Лайк" -->
                     <div class="expanded-action-buttons">
                         <div class="expanded-action-button dislike">
                             <img src="../../image/ankets elements/dislike.png" alt="Дизлайк">
@@ -116,15 +112,40 @@
                             <img src="../../image/ankets elements/like.png" alt="Лайк">
                         </div>
                     </div>
-                    <div class="collapse-button-container">
-                        <img src="../../image/ankets elements/left.png" alt="Свернуть" class="collapse-button">
-                        <span class="collapse-text">Свернуть</span>
+                </div>
+            </div>
+
+            <!-- Правый блок: информация о пользователе -->
+            <div class="expanded-right-section">
+                <div class="expanded-profile-info">
+                    <div class="expanded-name-info-container">
+                        <span class="expanded-name-info expanded-user-name"></span>
+                        <span class="expanded-name-info expanded-user-age"></span>
+                        <img class="expanded-user-gender" src="" alt="Пол">
+                        <img class="expanded-user-zodiac" src="" alt="Знак зодиака">
+                    </div>
+                    <div class="expanded-location-info">
+                        <img src="../../image/profil elements/sity.png" alt="Город">
+                        <span class="expanded-user-city"></span>
+                    </div>
+                    <div class="expanded-work-info">
+                        <img src="../../image/profil elements/work.png" alt="Работа">
+                        <span class="expanded-user-work"></span>
+                    </div>
+                    <div class="expanded-study-info">
+                        <img src="../../image/profil elements/study.png" alt="Учёба">
+                        <span class="expanded-user-study"></span>
                     </div>
                 </div>
+
+                <!-- Описание и интересы -->
+                <div class="expanded-description expanded-user-description"></div>
+                <div class="expanded-interests"></div>
             </div>
         </div>
     </div>
-</main>
+
+
 <script src="/templates/ankets/ankets.js"></script>
 </body>
 
