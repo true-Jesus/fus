@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Чат через Websocket</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        #chat-container {
+            width: 80%;
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        #messages {
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .message {
+            margin-bottom: 5px;
+            padding: 8px;
+            border-radius: 4px;
+            background-color: #e0e0e0;
+        }
+
+        .message strong {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        #input-area {
+            display: flex;
+            padding: 10px;
+        }
+
+        #author-input,
+        #message-input,
+        #room-input { /* Добавлено для комнаты */
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        #author-input {
+            flex: 1;
+        }
+
+        #message-input {
+            flex: 3;
+        }
+
+        #room-input { /* Добавлено для комнаты */
+            flex: 1;
+        }
+
+        #send-button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #send-button:hover {
+            background-color: #3e8e41;
+        }
+    </style>
+</head>
+<body>
+
+<div id="chat-container">
+    <div id="messages">
+        <!-- Здесь будут отображаться сообщения -->
+    </div>
+
+    <div id="input-area">
+        <input type="text" id="author-input" placeholder="Ваше имя">
+        <input type="text" id="message-input" placeholder="Введите ваше сообщение">
+        <input type="text" id="room-input" placeholder="Имя комнаты"> <!-- Добавлено поле ввода для комнаты -->
+        <button id="send-button">Отправить</button>
+    </div>
+</div>
+
+<script>
+    const messagesDiv = document.getElementById("messages");
+    const authorInput = document.getElementById("author-input");
+    const messageInput = document.getElementById("message-input");
+    const roomInput = document.getElementById("room-input"); // Добавлено
+    const sendButton = document.getElementById("send-button"); // ОПРЕДЕЛЯЕМ ЗДЕСЬ!
+    let websocket = null; // Объявляем websocket здесь, чтобы можно было переподключаться
+
+    function displayMessage(message) {
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message");
+        messageElement.innerHTML = `<strong>${message.author}:</strong> ${message.body}`;
+        messagesDiv.appendChild(messageElement);
+
+        // Прокрутить вниз, чтобы показать последнее сообщение
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    function connectWebSocket(room) {
+        // Закрываем существующее соединение, если оно есть
+        if (websocket) {
+            websocket.removeEventListener('open', arguments.callee);
+            websocket.close();
+        }
+
+        const wsUrl = `ws://localhost:8081/entry?room=${room}`;
+        websocket = new WebSocket(wsUrl);
+        websocket.room = room; // Сохраняем текущую комнату
+
+        websocket.onmessage = function (event) {
+            const message = JSON.parse(event.data);
+            displayMessage(message);
+        };
+
+        websocket.onclose = function (event) {
+            console.log("Отключено от websocket (комната: " + room + ")");
+        };
+    }
+
+    // Функция для подключения к комнате
+    function joinRoom() {
+        const room = roomInput.value.trim();
+        if (room) {
+            connectWebSocket(room);
+            websocket.onopen = function (event) {
+                console.log("Подключено к websocket (комната: " + room + ")");
+            };
+        } else {
+            alert("Пожалуйста, введите имя комнаты.");
+        }
+    }
+
+    sendButton.addEventListener("click", function () {
+        const author = authorInput.value.trim();
+        const body = messageInput.value.trim();
+        const room = roomInput.value.trim(); // Получаем имя комнаты из поля ввода
+
+        if (author && body && room) {
+            // Функция для отправки сообщения после подключения
+            const sendMessage = () => {
+                const message = {
+                    author: author,
+                    body: body,
+                    room: room // Добавляем имя комнаты в сообщение
+                };
+                websocket.send(JSON.stringify(message));
+                messageInput.value = ""; // Очистить поле ввода сообщения после отправки.
+            };
+
+            // Если websocket еще не подключен или комната изменилась, подключаемся
+            if (!websocket || websocket.readyState === WebSocket.CLOSED || websocket.room !== room) {
+                connectWebSocket(room); // Подключаемся к новой комнате
+                websocket.onopen = function (event) {
+                    console.log("Подключено к websocket (комната: " + room + ")");
+                    // Отправляем сообщение сразу после успешного подключения
+                    sendMessage();
+                };
+            } else if (websocket.readyState === WebSocket.OPEN) {
+                // Если соединение уже установлено, сразу отправляем сообщение
+                sendMessage();
+            } else {
+                // Если соединение в процессе установки, ждем события 'open'
+                websocket.addEventListener('open', function () {
+                    sendMessage();
+                });
+            }
+
+
+        } else {
+            alert("Пожалуйста, введите ваше имя, сообщение и имя комнаты.");
+        }
+    });
+
+    // Добавляем кнопку "Подключиться"
+    const joinButton = document.createElement("button");
+    joinButton.textContent = "Подключиться";
+    joinButton.addEventListener("click", joinRoom);
+    document.getElementById("input-area").appendChild(joinButton);
+</script>
+
+</body>
+</html>
