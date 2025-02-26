@@ -29,10 +29,11 @@ type UseCases struct {
 	aufUC   *usecases.AufUseCase
 	proUC   *usecases.ProfileUseCase
 	anketUc *usecases.AnketsUC
+	chatUc  *usecases.ChatUseCase
 }
 
-func NewUseCases(aufUC *usecases.AufUseCase, proUC *usecases.ProfileUseCase, anketUc *usecases.AnketsUC) *UseCases {
-	return &UseCases{aufUC: aufUC, proUC: proUC, anketUc: anketUc}
+func NewUseCases(aufUC *usecases.AufUseCase, proUC *usecases.ProfileUseCase, anketUc *usecases.AnketsUC, chatUc *usecases.ChatUseCase) *UseCases {
+	return &UseCases{aufUC: aufUC, proUC: proUC, anketUc: anketUc, chatUc: chatUc}
 }
 
 type Handlers struct {
@@ -73,6 +74,8 @@ func NewRouter(h *Handlers) *mux.Router {
 			Route{Name: "chats", Method: http.MethodGet, Pattern: "/listOfChats", HandlerFunc: h.ListOfChatsPage},
 			Route{Name: "HandleSetAssess", Method: http.MethodPost, Pattern: "/assess", HandlerFunc: h.HandleSetAssess},
 			Route{Name: "chatTest", Method: http.MethodGet, Pattern: "/chatTest", HandlerFunc: h.ChatTestPage},
+			Route{Name: "rooms", Method: http.MethodGet, Pattern: "/rooms", HandlerFunc: h.handleRooms},
+			Route{Name: "chat", Method: http.MethodGet, Pattern: "/chat", HandlerFunc: h.ChatPage},
 		}
 	)
 	router := mux.NewRouter().StrictSlash(true)
@@ -122,6 +125,7 @@ func (h *Handlers) NoticePage(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte(html))
 }
+
 func (h *Handlers) ListOfChatsPage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	htmlFile := "templates/listOfChats/listOfChats.html"
@@ -132,7 +136,16 @@ func (h *Handlers) ListOfChatsPage(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte(html))
 }
+func (h *Handlers) ChatPage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	htmlFile := "templates/chats/chats.html"
+	html, err := ioutil.ReadFile(htmlFile)
+	if err != nil {
+		log.Fatalf("Ошибка чтения файла: %v", err)
+	}
 
+	w.Write([]byte(html))
+}
 func (h *Handlers) LoginPage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	htmlFile := "templates/login/login.html"
@@ -726,4 +739,21 @@ func (h *Handlers) HandleSetAssess(w http.ResponseWriter, r *http.Request) {
 	// Отправляем успешный ответ
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
+}
+func (h *Handlers) handleRooms(w http.ResponseWriter, r *http.Request) {
+	username := r.URL.Query().Get("user")
+
+	if username == "" {
+		http.Error(w, "Необходимо передать имя пользователя", http.StatusBadRequest)
+		return
+	}
+	data, err := h.useCases.chatUc.GetRooms(username)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }

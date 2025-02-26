@@ -182,3 +182,47 @@ func (r *Repo) SetAssess(user, targetUser string, asses int) error {
 	fmt.Println("Запись успешно добавлена в таблицу actions")
 	return nil
 }
+
+type RoomInfo struct {
+	RoomID            string
+	OtherUserNickname string
+}
+
+// GetRoomsForUser функция, которая возвращает список RoomInfo для заданного пользователя
+func (r *Repo) GetRoomsForUser(targetUsername string) (*[]RoomInfo, error) {
+	query := `
+  SELECT
+   r.room_name AS room_id,
+   p.nickname AS other_user_nickname
+  FROM
+   rooms r
+  JOIN
+   profil p ON (
+    (LOWER(r.user1) = LOWER($1) AND LOWER(r.user2) = LOWER(p.username)) OR
+    (LOWER(r.user2) = LOWER($1) AND LOWER(r.user1) = LOWER(p.username))
+   )
+  WHERE
+   LOWER(r.user1) = LOWER($1) OR LOWER(r.user2) = LOWER($1);
+ `
+
+	rows, err := r.db.Query(query, targetUsername)
+	if err != nil {
+		return nil, fmt.Errorf("ошибка при выполнении запроса: %w", err)
+	}
+	defer rows.Close()
+
+	var roomInfos []RoomInfo
+	for rows.Next() {
+		var roomInfo RoomInfo
+		if err := rows.Scan(&roomInfo.RoomID, &roomInfo.OtherUserNickname); err != nil {
+			return nil, fmt.Errorf("ошибка при сканировании результатов: %w", err)
+		}
+		roomInfos = append(roomInfos, roomInfo)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("ошибка после итерации по результатам: %w", err)
+	}
+
+	return &roomInfos, nil
+}
