@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"fus/repo"
 	"fus/usecases"
+
 	"github.com/gorilla/mux"
 	"github.com/lib/pq"
+
 	"golang.org/x/crypto/bcrypt"
 	"image"
 	"image/draw"
@@ -70,6 +72,7 @@ func NewRouter(h *Handlers) *mux.Router {
 			Route{Name: "notice", Method: http.MethodGet, Pattern: "/notic", HandlerFunc: h.NoticePage},
 			Route{Name: "chats", Method: http.MethodGet, Pattern: "/listOfChats", HandlerFunc: h.ListOfChatsPage},
 			Route{Name: "HandleSetAssess", Method: http.MethodPost, Pattern: "/assess", HandlerFunc: h.HandleSetAssess},
+			Route{Name: "chatTest", Method: http.MethodGet, Pattern: "/chatTest", HandlerFunc: h.ChatTestPage},
 		}
 	)
 	router := mux.NewRouter().StrictSlash(true)
@@ -148,6 +151,15 @@ func (h *Handlers) ProfilePage(w http.ResponseWriter, r *http.Request) {
 		log.Fatalf("Ошибка чтения файла: %v", err)
 	}
 
+	w.Write([]byte(html))
+}
+func (h *Handlers) ChatTestPage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	htmlFile := "templates/chatTest.html"
+	html, err := ioutil.ReadFile(htmlFile)
+	if err != nil {
+		log.Println("ошибка чтения файла: ", err)
+	}
 	w.Write([]byte(html))
 }
 func (h *Handlers) RegisterPage(w http.ResponseWriter, r *http.Request) {

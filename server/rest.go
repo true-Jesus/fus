@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func RunServer(db *sql.DB) error {
+func RunFusServer(db *sql.DB) error {
 	fmt.Println("zbc")
 	//create repos
 	repoSql := repo.NewRepo(db)
