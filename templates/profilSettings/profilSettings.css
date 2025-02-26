@@ -370,46 +370,45 @@ header {
     background-color: rgba(255, 255, 255, 0.2);
 }
 
-.add-interest-modal{
-    position: absolute;
-    top: 76.5%;
-    left: 20%;
-    z-index: 500;
-    padding: 10px;
-    border-radius: 5px;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+.interest-add-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-left: 10px;
+}
 
-}
-.add-interest-input{
-    background-color: #FFEBFC;
-    padding: 10px 20px;
-    margin: 10px 0;
-    border: none;
-    border-radius: 25px;
-    cursor: pointer;
-    width: 300px;
-    height: 15px;
-}
-.add-interest-buttons{
-    position: absolute;
-    right: -80px;
-    top: 50%;
-    transform: translateY(-50%);
+.add-interest-modal {
     display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #FFEBFC;
+    border-radius: 25px;
+    padding: 8px 15px;
+}
+.add-interest-input {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    min-width: 250px;
+    padding: 5px 10px;
+}
+.add-interest-buttons {
+    display: flex;
+    gap: 5px;
     align-items: center;
 }
 .add-interest-confirm-icon{
     width: 40px;
     height: 40px;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 .add-interest-cancel-icon{
     cursor: pointer;
     width: 40px;
     height: 40px;
+    flex-shrink: 0;
 }
 
 .interests-container {

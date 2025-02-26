@@ -60,13 +60,17 @@ function animateOutAndIn(anketCard, anketContainer) {
 }
 
 function showExpandedAnket(expandedAnketContainer, anketCard) {
-    anketCard.style.display = 'none';
-    expandedAnketContainer.style.display = 'flex';
+    const background = document.querySelector('.background'); // Находим элемент фона
+    anketCard.style.display = 'none'; // Скрываем основную анкету
+    expandedAnketContainer.style.display = 'flex'; // Показываем расширенную анкету
+    background.style.display = 'none'; // Скрываем фон
 }
 
 function hideExpandedAnket(expandedAnketContainer, anketCard) {
-    anketCard.style.display = 'flex';
-    expandedAnketContainer.style.display = 'none';
+    const background = document.querySelector('.background'); // Находим элемент фона
+    anketCard.style.display = 'flex'; // Показываем основную анкету
+    expandedAnketContainer.style.display = 'none'; // Скрываем расширенную анкету
+    background.style.display = 'block'; // Показываем фон
 }
 
 function createAnketElement() {
