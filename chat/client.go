@@ -157,8 +157,7 @@ func (s *Server) getPastMessages(room string) ([]*Message, error) {
 	query := `
 	SELECT author, body FROM messages
 	WHERE room = $1
-	ORDER BY timestamp DESC
-	LIMIT 50;
+	ORDER BY timestamp ASC;
 	`
 	rows, err := s.db.Query(query, room)
 	if err != nil {

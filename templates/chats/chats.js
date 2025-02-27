@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function() {
     const chatList = document.querySelector('.chat-list');
     const chatMessages = document.querySelector('.chat-messages');
@@ -32,12 +31,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Проверяем, получили ли имя пользователя из cookie
     if (!userNickname) {
         console.error('Не удалось получить имя пользователя из cookie!');
-        // Возможно, стоит перенаправить пользователя на страницу авторизации
         return;
     }
 
     let websocket = null;
-    let currentRoomID = null; // Добавлено для отслеживания текущей комнаты
+    let currentRoomID = null;
 
     function sendMessageToWebSocket(message) {
         if (websocket && websocket.readyState === WebSocket.OPEN) {
@@ -45,41 +43,38 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             console.error("WebSocket не подключен или не готов к отправке сообщений.");
         }
-        //  const messageElement = document.createElement("div");
-        //  messageElement.classList.add("message");
-        //  messageElement.innerHTML = `<strong>${message.author}:</strong> ${message.body}`;
-        //  chatMessages.appendChild(messageElement);
-        //  chatMessages.scrollTop = chatMessages.scrollHeight;
-
     }
 
     function displayMessage(message) {
         const messageElement = document.createElement("div");
         messageElement.classList.add("message");
 
-        // Проверяем, является ли автор сообщения текущим пользователем
         const isCurrentUser = message.author === userNickname;
-        if (isCurrentUser) {
-            messageElement.classList.add("outgoing");
+        messageElement.classList.add(isCurrentUser ? "outgoing" : "incoming");
+
+        // Обработка разных типов сообщений
+        if (message.type === "image") {
+            const img = document.createElement('img');
+            img.src = message.body;
+            img.style.maxWidth = '200px';
+            messageElement.appendChild(img);
         } else {
-            messageElement.classList.add("incoming");
+            messageElement.textContent = message.body;
         }
 
-        messageElement.innerHTML = `<strong>${message.author}:</strong> ${message.body}`;
         chatMessages.appendChild(messageElement);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     function connectWebSocket(roomID) {
-        // Закрываем существующее соединение, если оно есть
         if (websocket) {
             websocket.close();
-            websocket = null; // Сбрасываем websocket
+            websocket = null;
         }
 
         const wsUrl = `ws://localhost:8081/entry?room=${roomID}`;
         websocket = new WebSocket(wsUrl);
-        currentRoomID = roomID; // Сохраняем текущую комнату
+        currentRoomID = roomID;
 
         websocket.onopen = function (event) {
             console.log(`Подключено к websocket (комната: ${roomID})`);
@@ -102,6 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
             currentRoomID = null;
         };
     }
+
     function sendMessage(messageText, file) {
         if (file) {
             const reader = new FileReader();
@@ -109,21 +105,14 @@ document.addEventListener('DOMContentLoaded', function() {
             reader.onload = function(event) {
                 const fileType = file.type;
                 if (fileType.startsWith('image/')) {
-                    // Если это изображение
-                    const imageElement = document.createElement('img');
-                    imageElement.src = event.target.result;
-                    imageElement.style.maxWidth = '200px';
-                    //отправляем сообщение WebSocket с URL изображения
                     const message = {
                         author: userNickname,
-                        body: event.target.result, // Отправляем URL изображения
+                        body: event.target.result,
                         room: currentRoomID,
-                        type: "image" // Добавляем тип сообщения
+                        type: "image"
                     };
-                    sendMessageToWebSocket(message)
+                    sendMessageToWebSocket(message);
                 } else if (fileType.startsWith('text/')) {
-                    // Если это текст
-                    //отправляем сообщение WebSocket с текстом
                     const message = {
                         author: userNickname,
                         body: event.target.result,
@@ -132,12 +121,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     };
                     sendMessageToWebSocket(message);
                 } else {
-                    // Если это любой другой тип файла
-                    const linkElement = document.createElement('a');
-                    linkElement.href = event.target.result;
-                    linkElement.download = file.name;
-                    linkElement.textContent = `Файл: ${file.name}`;
-                    //отправляем сообщение WebSocket со ссылкой на файл
                     const message = {
                         author: userNickname,
                         body: event.target.result,
@@ -154,30 +137,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 reader.readAsDataURL(file);
             }
         } else {
-            //отправляем текстовое сообщение WebSocket
             const message = {
                 author: userNickname,
                 body: messageText,
                 room: currentRoomID,
                 type: "text"
             };
-            sendMessageToWebSocket(message)
+            sendMessageToWebSocket(message);
         }
         messageInput.value = '';
         chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-    function sendMessageToWebSocket(message) {
-        if (websocket && websocket.readyState === WebSocket.OPEN) {
-            websocket.send(JSON.stringify(message));
-        } else {
-            console.error("WebSocket не подключен или не готов к отправке сообщений.");
-        }
-        const messageElement = document.createElement("div");
-        messageElement.classList.add("message");
-        messageElement.innerHTML = `<strong>${message.author}:</strong> ${message.body}`;
-        chatMessages.appendChild(messageElement);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
     }
 
     addFileButton.addEventListener('click', () => {
@@ -229,12 +198,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function loadMessages(roomID, otherUserNickname) {
         userNameHeader.textContent = otherUserNickname;
-        chatMessages.innerHTML = '';
+        chatMessages.innerHTML = ''; // Полная очистка контейнера
 
-        // Подключаемся к WebSocket комнате
+        // Запрос истории с защитой от кэширования
+        fetch(`/messages?room=${roomID}&_=${Date.now()}`)
+            .then(response => response.json())
+            .then(messages => {
+                // Если сервер возвращает новые сообщения первыми - переворачиваем массив
+                messages.reverse().forEach(message => {
+                    displayMessage(message);
+                });
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            })
+            .catch(console.error);
+
         connectWebSocket(roomID);
-        //sendMessage("", null)
-
     }
 
     function addChatToList(roomID, otherUserNickname) {
@@ -260,29 +238,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Загружаем список чатов с сервера
     function loadChatList() {
-        // Получаем имя пользователя из cookie
         const userNickname = getCookie('user');
 
-        // Проверяем, получили ли имя пользователя из cookie
         if (!userNickname) {
             console.error('Не удалось получить имя пользователя из cookie!');
-            return; // Прерываем выполнение, если нет имени пользователя
+            return;
         }
-        const url = new URL('/rooms', window.location.origin); // Используем URL, чтобы правильно добавить параметры
-        url.searchParams.append('user', userNickname); // Добавляем параметр userNickname
+
+        const url = new URL('/rooms', window.location.origin);
+        url.searchParams.append('user', userNickname);
         fetch(url, {
-            method: 'GET', // Явно указываем метод GET
+            method: 'GET',
         })
             .then(response => response.json())
             .then(data => {
-                // Обрабатываем полученные данные и добавляем чаты в список
                 data.forEach(chat => {
                     addChatToList(chat.RoomID, chat.OtherUserNickname);
                 });
 
-                // После загрузки чатов, проверяем, нужно ли открыть какой-то чат
                 if (initialRoomID && initialOtherUserNickname) {
                     loadMessages(initialRoomID, initialOtherUserNickname);
                 }
@@ -292,28 +266,17 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Изменяем обработчик отправки сообщения
     sendMessageButton.addEventListener('click', function() {
-        const messageText = messageInput.value;
-
-        // Проверяем, подключен ли websocket и есть ли сообщение для отправки
-        if (websocket && websocket.readyState === WebSocket.OPEN && messageText.trim() !== "") {
-            const message = {
-                author: userNickname,
-                body: messageText,
-                room: currentRoomID, // Отправляем текущий RoomID
-                type: "text"
-            };
-            sendMessageToWebSocket(message);
-            sendMessage("",null);
-        } else {
-            console.error("Невозможно отправить сообщение: WebSocket не подключен или сообщение пустое.");
+        const messageText = messageInput.value.trim();
+        if (messageText) {
+            sendMessage(messageText);
+            messageInput.value = '';
         }
     });
 
     toggleChatListButton.addEventListener('click', () => {
         chatListContainer.classList.toggle('collapsed');
     });
-    // Загружаем список чатов при загрузке страницы
+
     loadChatList();
 });
