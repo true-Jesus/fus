@@ -40,22 +40,26 @@ document.addEventListener('DOMContentLoaded', function() {
 let targname = "Изначальное значение"; // Начальное значение. Скорее всего, не то, что вам нужно.
 
 function animateOutAndIn(anketCard, anketContainer) {
+    // Анимируем только карточку
     anketCard.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
     anketCard.style.transform = 'translateY(-500px)';
     anketCard.style.opacity = '0';
 
     setTimeout(() => {
-        const newAnket = createAnketElement();
-        newAnket.style.opacity = '0';
-        anketContainer.innerHTML = '';
-        anketContainer.appendChild(newAnket);
+        // Создаем новую карточку
+        const newCard = createAnketCard();
+        newCard.style.opacity = '0';
+
+        // Заменяем только карточку внутри контейнера
+        anketContainer.replaceChild(newCard, anketCard);
 
         // Force reflow to apply initial styles
-        void newAnket.offsetWidth;
+        void newCard.offsetWidth;
 
-        newAnket.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        newAnket.style.opacity = '1';
-        newAnket.style.transform = 'translateY(0)';
+        // Анимируем появление новой карточки
+        newCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        newCard.style.opacity = '1';
+        newCard.style.transform = 'translateY(0)';
     }, 500);
 }
 
@@ -73,48 +77,55 @@ function hideExpandedAnket(expandedAnketContainer, anketCard) {
     background.style.display = 'block'; // Показываем фон
 }
 
-function createAnketElement() {
+function createAnketCard() {
+    // Создаем только карточку, без контейнера
     const newCard = document.createElement('div');
     newCard.classList.add('anket-card');
+
+    // Копируем структуру карточки
     newCard.innerHTML = `
-             <div class="image-container">
-                 <img src="" alt="Фото пользователя" class="user-photo">
+        <div class="image-container">
+            <img src="" alt="Фото пользователя" class="user-photo">
+        </div>
+        <div class="profile-info">
+            <div class="name-info-container">
+                <span class="name-info user-name"></span> 
+                <span class="name-info user-age"></span> 
+                <img class="user-gender" src="" alt="Пол"> 
+                <img class="user-zodiac" src="" alt="Знак зодиака">
             </div>
-            <div class="profile-info">
-                <div class="name-info-container">
-                  <span class="name-info user-name"></span> <span class="name-info user-age"></span> <img class="user-gender" src="" alt="Пол"> <img class="user-zodiac" src="" alt="Знак зодиака">
+            <div class="location-info">
+                <img src="../../image/profil elements/sity.png" alt="Город"> 
+                <span class="user-city"></span>
+            </div>
+            <div class="work-info">
+                <img src="../../image/profil elements/work.png" alt="Работа"> 
+                <span class="user-work"></span>
+            </div>
+            <div class="study-info">
+                <img src="../../image/profil elements/study.png" alt="Учёба"> 
+                <span class="user-study"></span>
+            </div>
+        </div>
+        <div class="description user-description"></div>
+        <div class="interests"></div>
+        <div class="anket-actions">
+            <div class="action-buttons">
+                <div class="action-button dislike">
+                    <img src="../../image/ankets elements/dislike.png" alt="Дизлайк">
                 </div>
-                <div class="location-info">
-                    <img src="../../image/profil elements/sity.png" alt="Город"> <span class="user-city"></span>
-                </div>
-                <div class="work-info">
-                    <img src="../../image/profil elements/work.png" alt="Работа"> <span class="user-work"></span>
-                </div>
-                <div class="study-info">
-                    <img src="../../image/profil elements/study.png" alt="Учёба"> <span class="user-study"></span>
+                <div class="action-button like">
+                    <img src="../../image/ankets elements/like.png" alt="Лайк">
                 </div>
             </div>
-            <div class="description user-description">
+            <div class="expand-button-container">
+                <img src="../../image/ankets elements/right.png" alt="Развернуть" class="expand-button">
+                <span class="expand-text">Развернуть</span>
+            </div>
+        </div>
+    `;
 
-            </div>
-            <div class="interests">
-
-            </div>
-            <div class="anket-actions">
-                <div class="action-buttons">
-                    <div class="action-button dislike">
-                        <img src="../../image/ankets elements/dislike.png" alt="Дизлайк">
-                    </div>
-                    <div class="action-button like">
-                        <img src="../../image/ankets elements/like.png" alt="Лайк">
-                    </div>
-                </div>
-                <div class="expand-button-container">
-                    <img src="../../image/ankets elements/right.png" alt="Развернуть" class="expand-button">
-                    <span class="expand-text">Развернуть</span>
-                </div>
-            </div>
-        `;
+    // Загружаем данные для новой карточки
     loadUserDataForElement(newCard);
     return newCard;
 }
