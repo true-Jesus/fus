@@ -326,62 +326,85 @@ header {
 }
 
 /* Контейнер для развернутой анкеты */
+/* Развернутая анкета - переработанная версия */
 .expanded-anket-container {
     display: none;
-    position: relative;
-    width: 100%;
+    position: fixed;
+    top: 6rem;
+    left: 0;
+    right: 0;
+    bottom: 0;
     padding: 20px;
+    background: #606F81;
+    z-index: 99;
+    overflow-y: auto;
 }
 
-/* Карточка развернутой анкеты */
 .expanded-anket-card {
-    gap: 20px;
+    display: grid;
+    grid-template-columns: minmax(300px, 35%) 1fr minmax(250px, 30%);
+    grid-template-rows: auto auto;
+    gap: 2rem;
+    max-width: 2000px;
+    margin: 0 auto;
+    padding: 2rem 0;
     width: 100%;
-    height: 100%;
 }
 
-/* Левый блок (фото + кнопки) */
+/* Левый блок - фиксированная ширина */
 .expanded-left-section {
-    top: -3rem;
-    align-self: center;
-    align-content: center;
-    align-items: center;
-    width: 35vw;
+    left: 2rem;
+    grid-column: 1;
+    grid-row: 1 / span 2;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    align-items: center;
+    gap: 2rem;
+    top: var(--header-height);
+    height: fit-content;
 }
 
-/* Фото пользователя */
 .expanded-image-container {
-    top: -3rem;
-    position: relative;
-    display: flex;
-    justify-content: center;
     width: 35rem;
     height: 35rem;
+    aspect-ratio: 1;
+    border-radius: 30px;
+    overflow: hidden;
+    background: #485C74;
 }
 
 .expanded-user-photo {
-    align-items: center;
-    width: 100%;
-    border-radius: 30px;
-    object-fit: cover; /* Сохраняем пропорции фото */
-    height: 100%;
+    width: 35rem;
+    height: 35rem;
+    object-fit: cover;
+    display: block;
 }
 
-/* Кнопки */
 .expanded-anket-actions {
     width: 100%;
-    margin-top: -2rem;
-    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
 }
 
-/* Кнопка "Свернуть" */
+.expanded-action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    width: 100%;
+}
+
+.expanded-action-button img {
+    cursor: pointer;
+    width: clamp(60px, 6vw, 80px);
+    height: clamp(60px, 6vw, 80px);
+}
+
 .collapse-button-container {
-    padding-left: 30px;
+    width: 100%;
+    padding-left: 4rem;
     justify-content: flex-start;
-    position: relative;
     display: flex;
     flex-direction: column;
     cursor: pointer;
@@ -397,131 +420,110 @@ header {
     color: #FFEBFC;
 }
 
-/* Кнопки "Дизлайк" и "Лайк" */
-.expanded-action-buttons {
-    justify-content: center;
+/* Центральный блок - стабильное позиционирование */
+.expanded-center-section {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 1rem 2rem;
     display: flex;
-    gap: 5rem; /* Расстояние между кнопками */
-}
-
-.expanded-action-button img {
-    width: 80px;
-    height: 80px;
-    cursor: pointer;
-}
-
-/* Середина*/
-
-.expanded-center-section{
-    top: -2rem;
-    left: 37%;
-    padding: 20px;
-    position: absolute;
-    align-self: center;
-    align-content: center;
-    width: 100vw;
     flex-direction: column;
-    gap: 20px;
-    align-items: center;
+    gap: 2rem;
 }
 
 .expanded-profile-info {
-    position: absolute;
-    max-width: 50%;
-    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     color: #FFD0F8;
     text-shadow: -2px -2px 0 #9A2867, 2px -2px 0 #9A2867, -2px 2px 0 #9A2867, 2px 2px 0 #9A2867;
 }
 
+.expanded-name-info-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
 .expanded-name-info {
-    font-size: 50px;
+    font-size: 2.8rem;
     font-weight: bold;
-    margin-bottom: 5px;
-    margin-right: 5px;
-}
-.expanded-name-info-container{
-    display: flex;
-    align-items: center;
+    line-height: 1;
 }
 
-.expanded-user-gender{
+.expanded-user-gender,
+.expanded-user-zodiac {
     width: 45px;
-    height: auto;
-    margin-right: 5px;
+    height: 45px;
+    flex-shrink: 0;
 }
 
-.expanded-user-zodiac{
-    width: 45px;
-    height: auto;
-    margin-right: 5px;
-}
-
-.expanded-location-info {
-    display: flex;
-    align-items: center;
-    font-size: 30px;
-    margin-bottom: 5px;
-}
-
-.expanded-location-info img {
-    width: 40px;
-    height: auto;
-    margin-right: 5px;
-}
-
+.expanded-location-info,
 .expanded-work-info,
 .expanded-study-info {
     display: flex;
     align-items: center;
-    font-size: 30px;
-    margin-bottom: 5px;
+    gap: 1rem;
+    font-size: 1.6rem;
 }
 
+.expanded-location-info img,
 .expanded-work-info img,
 .expanded-study-info img {
-    width: 40px;
-    height: auto;
-    margin-right: 5px;
+    width: 35px;
+    height: 35px;
+    flex-shrink: 0;
 }
 
-/*Право*/
-.expanded-right-section{
-    width: 600px;
-    height: 400px;
-    top: -2rem;
-    right: 6rem;
-    position: absolute;
+/* Правый блок - контролируемая высота */
+.expanded-right-section {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: start;
+    justify-self: center; /* Прижимаем к правому краю */
+    padding: 1rem;
     display: flex;
     flex-wrap: wrap;
+    gap: 1rem;
+    max-height: 10vh;
+    overflow-y: auto;
+    max-width: 40vw; /* Фиксированная ширина */
+    width: 100%;
+    border-radius: 20px;
+    position: sticky;
+    top: var(--header-height);
 }
-
 
 .expanded-interest {
-    background-color: #FFEBF9;
-    padding: 8px 12px;
-    border-radius: 20px;
-    margin-right: 5px;
-    margin-top: 10px;
+    background: #FFEBFC;
     color: #9A2867;
-    border: 2px solid #9A2867;
+    padding: 0.8rem 1.5rem;
+    border-radius: 20px;
+    font-size: 1.4rem;
+    border: 1px solid #9A2867;
+    flex-shrink: 0;
 }
 
-/*Низ*/
-.expanded-bottom-section{
-    position: absolute;
-    max-width: 1000px;
-    padding: 20px;
-    right: 10rem;
-    bottom: 6rem;
+/* Нижний блок - фиксированное положение */
+.expanded-bottom-section {
+    flex: 1;
+    grid-column: 2 / span 2;
+    grid-row: 2;
+    margin-left: 4rem;
+    padding: 0 1rem 1rem 0;
+    background: rgba(255, 235, 252, 0.9);
+    width: 100%;
+    border-radius: 20px;
+    max-width: 50vw;
 }
 
 .expanded-description {
-    word-wrap: break-word;
-    padding: 15px;
-    border-radius: 20px;
     color: #9A2867;
-    background-color: #FFEBFC;
-    margin-top: 10px;
-    display: block;
-    font-size: 20px;
+    font-size: 1.3rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    padding: 1.5rem;
+    width: 100%;
 }
