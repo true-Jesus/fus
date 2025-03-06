@@ -1,5 +1,4 @@
-
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const dislikeButton = document.querySelector('.action-button.dislike');
     const likeButton = document.querySelector('.action-button.like');
     const anketCard = document.querySelector('.anket-card');
@@ -9,54 +8,62 @@ document.addEventListener('DOMContentLoaded', function() {
     const collapseButton = document.querySelector('.collapse-button-container');
 
     if (dislikeButton && likeButton && anketCard) {
-        loadUserData().then(() => {  // Ждем завершения loadUserData
-            console.log("Начальное значение targname:", targname); // Отладка: проверяем начальное значение
+        loadUserData().then(() => {
+            console.log("Начальное значение targname:", targname);
 
-            dislikeButton.addEventListener('click', function() {
-                console.log("Нажат дизлайк. targname:", targname); // Отладка
+            dislikeButton.addEventListener('click', function () {
+                console.log("Нажат дизлайк. targname:", targname);
                 handleAssessment(0);
                 animateOutAndIn(anketCard, anketContainer);
-
             });
 
-            likeButton.addEventListener('click', function() {
-                console.log("Нажат лайк. targname:", targname); // Отладка
+            likeButton.addEventListener('click', function () {
+                console.log("Нажат лайк. targname:", targname);
                 handleAssessment(1);
                 animateOutAndIn(anketCard, anketContainer);
             });
         });
 
-        expandButton.addEventListener('click', function() {
+        expandButton.addEventListener('click', function () {
             showExpandedAnket(expandedAnketContainer, anketCard);
         });
-        collapseButton.addEventListener('click', function() {
+
+        collapseButton.addEventListener('click', function () {
             hideExpandedAnket(expandedAnketContainer, anketCard);
         });
     } else {
-        console.error("Один или несколько элементов не найдены!"); // Важно: обрабатываем отсутствующие элементы
+        console.error("Один или несколько элементов не найдены!");
     }
+
+    // Обработчики для кнопок в развернутой анкете через делегирование событий
+    document.addEventListener('click', async function (event) {
+        const target = event.target;
+        const expandedDislike = target.closest('.expanded-action-button.dislike');
+        const expandedLike = target.closest('.expanded-action-button.like');
+
+        if (expandedDislike || expandedLike) {
+            event.preventDefault();
+            const value = expandedDislike ? 0 : 1;
+            await handleAssessment(value);
+            await animateExpandedAnketOutAndIn();
+        }
+    });
 });
 
-let targname = "Изначальное значение"; // Начальное значение. Скорее всего, не то, что вам нужно.
+let targname = "Изначальное значение";
 
 function animateOutAndIn(anketCard, anketContainer) {
-    // Анимируем только карточку
     anketCard.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
     anketCard.style.transform = 'translateY(-500px)';
     anketCard.style.opacity = '0';
 
     setTimeout(() => {
-        // Создаем новую карточку
         const newCard = createAnketCard();
         newCard.style.opacity = '0';
-
-        // Заменяем только карточку внутри контейнера
         anketContainer.replaceChild(newCard, anketCard);
 
-        // Force reflow to apply initial styles
         void newCard.offsetWidth;
 
-        // Анимируем появление новой карточки
         newCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
         newCard.style.opacity = '1';
         newCard.style.transform = 'translateY(0)';
@@ -64,25 +71,23 @@ function animateOutAndIn(anketCard, anketContainer) {
 }
 
 function showExpandedAnket(expandedAnketContainer, anketCard) {
-    const background = document.querySelector('.background'); // Находим элемент фона
-    anketCard.style.display = 'none'; // Скрываем основную анкету
-    expandedAnketContainer.style.display = 'flex'; // Показываем расширенную анкету
-    background.style.display = 'none'; // Скрываем фон
+    const background = document.querySelector('.background');
+    anketCard.style.display = 'none';
+    expandedAnketContainer.style.display = 'flex';
+    background.style.display = 'none';
 }
 
 function hideExpandedAnket(expandedAnketContainer, anketCard) {
-    const background = document.querySelector('.background'); // Находим элемент фона
-    anketCard.style.display = 'flex'; // Показываем основную анкету
-    expandedAnketContainer.style.display = 'none'; // Скрываем расширенную анкету
-    background.style.display = 'block'; // Показываем фон
+    const background = document.querySelector('.background');
+    anketCard.style.display = 'flex';
+    expandedAnketContainer.style.display = 'none';
+    background.style.display = 'block';
 }
 
 function createAnketCard() {
-    // Создаем только карточку, без контейнера
     const newCard = document.createElement('div');
     newCard.classList.add('anket-card');
 
-    // Копируем структуру карточки
     newCard.innerHTML = `
         <div class="image-container">
             <img src="" alt="Фото пользователя" class="user-photo">
@@ -125,11 +130,9 @@ function createAnketCard() {
         </div>
     `;
 
-    // Загружаем данные для новой карточки
     loadUserDataForElement(newCard);
     return newCard;
 }
-
 
 async function loadUserData() {
     const user = getCookie('user');
@@ -143,16 +146,15 @@ async function loadUserData() {
             throw new Error(`HTTP ошибка! Статус: ${response.status}`);
         }
         const userData = await response.json();
-        console.log("Данные пользователя загружены:", userData); // Отладка: проверяем данные
+        console.log("Данные пользователя загружены:", userData);
         const processedData = processUserData(userData);
-        targname = processedData.tname
+        targname = processedData.tname;
         updateProfile(processedData);
         updateExpandedProfile(processedData);
-        console.log("targname после loadUserData:", targname); // Отладка
-
+        console.log("targname после loadUserData:", targname);
+        return processedData;
     } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
-        // Обработка ошибок (например, отображение сообщения об ошибке пользователю)
     }
 }
 
@@ -170,13 +172,12 @@ async function loadUserDataForElement(card) {
         const userData = await response.json();
 
         const processedData = processUserData(userData);
-        targname = processedData.tname
+        targname = processedData.tname;
         updateProfileForElement(card, processedData);
         updateExpandedProfileForElement(card, processedData);
 
     } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
-        // Обработка ошибок (например, отображение сообщения об ошибке пользователю)
     }
 }
 
@@ -187,27 +188,26 @@ async function getImage(imagePath) {
             throw new Error(`HTTP ошибка! Статус: ${response.status}`);
         }
         const blob = await response.blob();
-        return URL.createObjectURL(blob);  // Создаем URL для отображения изображения
+        return URL.createObjectURL(blob);
     } catch (error) {
         console.error('Ошибка при загрузке изображения:', error);
-        return null; // Или какое-то изображение-заглушка
+        return null;
     }
 }
 
 function processUserData(userData) {
-
     return {
         tname: userData.username,
-        name: userData.nickname, // Используем nickname, если нужно
+        name: userData.nickname,
         age: userData.age,
-        gender: getGenderImage(userData.gender), // Функция для получения пути к изображению пола
-        zodiac: getZodiacImage(userData.zodiac), // Функция для получения пути к изображению знака зодиака
+        gender: getGenderImage(userData.gender),
+        zodiac: getZodiacImage(userData.zodiac),
         city: userData.city,
-        work: userData.place_of_work, // Используйте правильное поле
-        study: userData.place_of_study, // Используйте правильное поле
+        work: userData.place_of_work,
+        study: userData.place_of_study,
         description: userData.description,
         interests: userData.interests,
-        photo:  `/images?imagePath=${userData.photopath}`
+        photo: `/images?imagePath=${userData.photopath}`
     };
 }
 
@@ -249,8 +249,7 @@ function getZodiacImage(zodiac) {
     }
 }
 
-
-function updateProfile(data){
+function updateProfile(data) {
     const userName = document.querySelector('.user-name');
     const userAge = document.querySelector('.user-age');
     const userGender = document.querySelector('.user-gender');
@@ -262,7 +261,6 @@ function updateProfile(data){
     const interestsContainer = document.querySelector('.interests');
     const userPhoto = document.querySelector('.user-photo');
 
-
     userPhoto.src = data.photo;
     userName.textContent = data.name + ', ';
     userAge.textContent = data.age;
@@ -273,8 +271,7 @@ function updateProfile(data){
     userStudy.textContent = data.study;
     userDescription.textContent = data.description;
 
-
-    interestsContainer.innerHTML = ''; // Очищаем предыдущие интересы
+    interestsContainer.innerHTML = '';
 
     data.interests.slice(0, 3).forEach(interest => {
         const button = document.createElement('button');
@@ -284,8 +281,7 @@ function updateProfile(data){
     });
 }
 
-
-function updateProfileForElement(card, data){
+function updateProfileForElement(card, data) {
     const userName = card.querySelector('.user-name');
     const userAge = card.querySelector('.user-age');
     const userGender = card.querySelector('.user-gender');
@@ -307,7 +303,7 @@ function updateProfileForElement(card, data){
     userStudy.textContent = data.study;
     userDescription.textContent = data.description;
 
-    interestsContainer.innerHTML = ''; // Очищаем предыдущие интересы
+    interestsContainer.innerHTML = '';
 
     data.interests.slice(0, 3).forEach(interest => {
         const button = document.createElement('button');
@@ -317,8 +313,7 @@ function updateProfileForElement(card, data){
     });
 }
 
-
-function updateExpandedProfile(data){
+function updateExpandedProfile(data) {
     const userName = document.querySelector('.expanded-user-name');
     const userAge = document.querySelector('.expanded-user-age');
     const userGender = document.querySelector('.expanded-user-gender');
@@ -330,7 +325,6 @@ function updateExpandedProfile(data){
     const interestsContainer = document.querySelector('.expanded-interests');
     const userPhoto = document.querySelector('.expanded-user-photo');
 
-
     userPhoto.src = data.photo;
     userName.textContent = data.name + ', ';
     userAge.textContent = data.age;
@@ -341,7 +335,7 @@ function updateExpandedProfile(data){
     userStudy.textContent = data.study;
     userDescription.textContent = data.description;
 
-    interestsContainer.innerHTML = ''; // Очищаем предыдущие интересы
+    interestsContainer.innerHTML = '';
     data.interests.forEach(interest => {
         const button = document.createElement('button');
         button.classList.add('interest-button');
@@ -350,7 +344,7 @@ function updateExpandedProfile(data){
     });
 }
 
-function updateExpandedProfileForElement(card, data){
+function updateExpandedProfileForElement(card, data) {
     const userName = card.querySelector('.expanded-user-name');
     const userAge = card.querySelector('.expanded-user-age');
     const userGender = card.querySelector('.expanded-user-gender');
@@ -362,7 +356,6 @@ function updateExpandedProfileForElement(card, data){
     const interestsContainer = card.querySelector('.expanded-interests');
     const userPhoto = card.querySelector('.expanded-user-photo');
 
-
     userPhoto.src = data.photo;
     userName.textContent = data.name + ', ';
     userAge.textContent = data.age;
@@ -372,7 +365,7 @@ function updateExpandedProfileForElement(card, data){
     userWork.textContent = data.work;
     userStudy.textContent = data.study;
     userDescription.textContent = data.description;
-    interestsContainer.innerHTML = ''; // Очищаем предыдущие интересы
+    interestsContainer.innerHTML = '';
     data.interests.forEach(interest => {
         const button = document.createElement('button');
         button.classList.add('interest-button');
@@ -380,11 +373,13 @@ function updateExpandedProfileForElement(card, data){
         interestsContainer.appendChild(button);
     });
 }
+
 function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
+
 async function handleAssessment(value) {
     const user = getCookie('user');
 
@@ -399,12 +394,12 @@ async function handleAssessment(value) {
         const response = await fetch('/assess', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json' // Убедитесь, что заголовок Content-Type установлен
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ // Преобразуем объект в строку JSON
+            body: JSON.stringify({
                 username: user,
                 targetname: targname,
-                assessment: value.toString() // Преобразуем значение в строку, как ожидает сервер
+                assessment: value.toString()
             })
         });
 
@@ -412,10 +407,50 @@ async function handleAssessment(value) {
             throw new Error(`HTTP ошибка! Статус: ${response.status}`);
         }
 
-        const responseData = await response.json(); // Разбираем JSON-ответ
+        const responseData = await response.json();
         console.log('Оценка отправлена успешно!', responseData);
-
+        return true;
     } catch (error) {
         console.error('Ошибка при отправке оценки:', error);
+        return false;
     }
+}
+
+// Анимация для развернутой анкеты
+async function animateExpandedAnketOutAndIn() {
+    const expandedContainer = document.querySelector('.expanded-anket-container');
+    const expandedBackground = document.querySelector('.expanded-background');
+    if (!expandedContainer || !expandedBackground) return;
+
+    // Анимация скрытия текущей анкеты
+    expandedContainer.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+    expandedContainer.style.transform = 'translateY(-500px)';
+    expandedContainer.style.opacity = '0';
+
+    // Ждем завершения анимации
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Загружаем новые данные
+    const processedData = await loadUserData();
+    if (!processedData) return;
+
+    // Обновляем данные в развернутой анкете
+    updateExpandedProfile(processedData);
+
+    // Сбрасываем стили для новой анимации
+    expandedContainer.style.transition = 'none';
+    expandedContainer.style.transform = 'translateY(500px)';
+    expandedContainer.style.opacity = '0';
+
+    // Принудительное обновление DOM
+    void expandedContainer.offsetHeight;
+
+    // Анимация появления новой анкеты
+    expandedContainer.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+    expandedContainer.style.transform = 'translateY(0)';
+    expandedContainer.style.opacity = '1';
+
+    // Убедимся, что фон сохраняет свои размеры
+    expandedBackground.style.width = '26vw';
+    expandedBackground.style.height = '100%';
 }
