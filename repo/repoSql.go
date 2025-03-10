@@ -226,3 +226,42 @@ func (r *Repo) GetRoomsForUser(targetUsername string) (*[]RoomInfo, error) {
 
 	return &roomInfos, nil
 }
+
+func (r *Repo) Asses(user, targetUsername string) (int, error) {
+	query := `SELECT
+action_type
+FROM
+actions
+WHERE
+user_username = $1 AND target_username = $2;
+`
+	rows, err := r.db.Query(query, user, targetUsername)
+	if err != nil {
+		return 0, fmt.Errorf("ошибка при выполнении запроса: %w", err)
+	}
+	defer rows.Close()
+	var actionType int // Предполагаем, что action_type - это int.  Измените тип, если это не так.
+	if rows.Next() {
+		err = rows.Scan(&actionType)
+		if err != nil {
+			return 0, fmt.Errorf("ошибка при сканировании строки: %w", err)
+		}
+		return actionType, nil
+	}
+
+	return 0, nil
+}
+func (r *Repo) CreatRoom(user1, user2 string) error {
+	query := `
+  INSERT INTO rooms (room_name, user1, user2)
+  VALUES ($1, $2, $3)
+ `
+	roomName := user1 + user2
+	// Выполняем запрос с использованием параметризованных значений для безопасности.
+	_, err := r.db.Exec(query, roomName, user1, user2)
+	if err != nil {
+		return fmt.Errorf("ошибка при создании комнаты: %w", err)
+	}
+
+	return nil
+}
