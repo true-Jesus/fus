@@ -22,5 +22,24 @@ func (a *AnketsUC) SetAssess(user, targetUser string, asses int) error {
 	if err != nil {
 		return err
 	}
+	if asses == 1 {
+		err = a.newRoom(targetUser, user, asses)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (a *AnketsUC) newRoom(user, targetUser string, asses int) error {
+	ass, err := a.repo.Asses(user, targetUser)
+	if err != nil {
+		return err
+	}
+	if ass == asses {
+		err = a.repo.CreatRoom(user, targetUser)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }

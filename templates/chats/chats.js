@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function() {
     const chatList = document.querySelector('.chat-list');
     const chatMessages = document.querySelector('.chat-messages');
@@ -72,7 +73,8 @@ document.addEventListener('DOMContentLoaded', function() {
             websocket = null;
         }
 
-        const wsUrl = `ws://localhost:8081/entry?room=${roomID}`;
+        //  Заменили wsUrl
+        const wsUrl = `ws://192.168.0.42:8081/entry?room=${roomID}`;
         websocket = new WebSocket(wsUrl);
         currentRoomID = roomID;
 
@@ -201,16 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
         chatMessages.innerHTML = ''; // Полная очистка контейнера
 
         // Запрос истории с защитой от кэширования
-        fetch(`/messages?room=${roomID}&_=${Date.now()}`)
-            .then(response => response.json())
-            .then(messages => {
-                // Если сервер возвращает новые сообщения первыми - переворачиваем массив
-                messages.reverse().forEach(message => {
-                    displayMessage(message);
-                });
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            })
-            .catch(console.error);
+
 
         connectWebSocket(roomID);
     }

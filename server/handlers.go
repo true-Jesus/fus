@@ -57,12 +57,10 @@ func NewRouter(h *Handlers) *mux.Router {
 	var (
 		routes = Routes{
 			Route{Name: "HomePage", Method: http.MethodGet, Pattern: "/", HandlerFunc: h.Homepage},
-			Route{Name: "LoginPage", Method: http.MethodGet, Pattern: "/logPg", HandlerFunc: h.LoginPage},
-			Route{Name: "RegistrPage", Method: http.MethodGet, Pattern: "/regPg", HandlerFunc: h.RegisterPage},
 			Route{Name: "Login", Method: http.MethodPost, Pattern: "/log", HandlerFunc: h.HandleLogin},
 			Route{Name: "Register", Method: http.MethodPost, Pattern: "/reg", HandlerFunc: h.HandleRegistration},
-			Route{Name: "RegistrPage", Method: http.MethodGet, Pattern: "/profil", HandlerFunc: h.ProfilePage}, //, MiddlewareAuf: usecases.AuthMiddleware
-			Route{Name: "RegistrPage", Method: http.MethodGet, Pattern: "/profilSettings", HandlerFunc: h.ProfilSettings},
+			Route{Name: "profil", Method: http.MethodGet, Pattern: "/profil", HandlerFunc: h.ProfilePage}, //, MiddlewareAuf: usecases.AuthMiddleware
+			Route{Name: "profilSettings", Method: http.MethodGet, Pattern: "/profilSettings", HandlerFunc: h.ProfilSettings},
 			Route{Name: "saveSettings", Method: http.MethodPost, Pattern: "/saveSettings", HandlerFunc: h.SaveSettings},
 			Route{Name: "getProfil", Method: http.MethodGet, Pattern: "/getProfilePhoto", HandlerFunc: h.handleGetProfilePhoto},
 			Route{Name: "getProfil", Method: http.MethodGet, Pattern: "/getProfile", HandlerFunc: h.handleGetProfile},
@@ -146,16 +144,7 @@ func (h *Handlers) ChatPage(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte(html))
 }
-func (h *Handlers) LoginPage(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	htmlFile := "templates/login/login.html"
-	html, err := ioutil.ReadFile(htmlFile)
-	if err != nil {
-		log.Fatalf("Ошибка чтения файла: %v", err)
-	}
 
-	w.Write([]byte(html))
-}
 func (h *Handlers) ProfilePage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	htmlFile := "templates/profil/profil.html"
@@ -175,16 +164,7 @@ func (h *Handlers) ChatTestPage(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Write([]byte(html))
 }
-func (h *Handlers) RegisterPage(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
-	htmlFile := "templates/register/register.html"
-	html, err := ioutil.ReadFile(htmlFile)
-	if err != nil {
-		log.Fatalf("Ошибка чтения файла: %v", err)
-	}
 
-	w.Write([]byte(html))
-}
 func (h *Handlers) ProfilPage(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 	htmlFile := "templates/profil/profil.html"
@@ -270,37 +250,6 @@ func (h *Handlers) HandleLogin(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, token)
 }
 
-//	func (h *Handlers) SaveSettings(w http.ResponseWriter, r *http.Request) {
-//		var Data struct {
-//			// photo todo узнать в каком формате принимать
-//			Username    string   `json:"user"`
-//			Name        string   `json:"name"`
-//			Age         string   `json:"age"`
-//			Gender      string   `json:"gender"`
-//			Zodiac      string   `json:"zodiac"`
-//			City        string   `json:"city"`
-//			Work        string   `json:"work"`
-//			Study       string   `json:"study"`
-//			Description string   `json:"description"`
-//			Interests   []string `json:"interests"`
-//		}
-//		// Декодируем JSON из тела запроса в структуру gradeData
-//		fmt.Print(r.Body)
-//		err := json.NewDecoder(r.Body).Decode(&Data)
-//		if err != nil {
-//			fmt.Println(err, "SaveSettings 1")
-//			http.Error(w, err.Error(), http.StatusBadRequest)
-//			return
-//		}
-//		fmt.Println("Полученные данные:", Data)
-//		err = h.useCases.proUC.SetProfileSettings(Data.Username, Data.Name, Data.Age, Data.Gender, Data.Zodiac, Data.City, Data.Work, Data.Study, Data.Description, Data.Interests)
-//		if err != nil {
-//			fmt.Println(err, "SaveSettings 2")
-//			http.Error(w, err.Error(), http.StatusInternalServerError)
-//		}
-//		w.WriteHeader(http.StatusOK)
-//
-// }
 func (h *Handlers) SaveSettings(w http.ResponseWriter, r *http.Request) {
 	fname := ""
 	if r.Method != http.MethodPost {
@@ -439,9 +388,6 @@ func (h *Handlers) handleGetProfilePhoto(w http.ResponseWriter, r *http.Request)
 	http.ServeContent(w, r, filepath.Base(fullPath), fileInfo.ModTime(), file)
 
 	return
-
-}
-func (h *Handlers) handleGetUserId(w http.ResponseWriter, r *http.Request) {
 
 }
 func (h *Handlers) handleGetProfile(w http.ResponseWriter, r *http.Request) {
@@ -668,13 +614,6 @@ func (h *Handlers) handleImages(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-
-	//safePath := filepath.Clean(imagePath)
-	//if filepath.IsAbs(safePath) || strings.Contains(safePath, "..") {
-	//	http.Error(w, "Invalid image path", http.StatusBadRequest)
-	//	log.Printf("Attempted invalid image path: %s", imagePath)
-	//	return
-	//}
 
 	fullPath := filepath.Join("./", imagePath)
 	fmt.Println(fullPath)

@@ -12,8 +12,6 @@ import (
 	_ "github.com/lib/pq" // Импортируем драйвер PostgreSQL
 )
 
-// TODO:FUS-3 ааааааа
-// aa
 func main() {
 	log.SetFlags(log.Lshortfile)
 	dbFus, err := repo.ConnectToDB()
