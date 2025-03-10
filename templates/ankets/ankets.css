@@ -100,7 +100,7 @@ header {
     max-width: 900px; /* Совпадает с max-width anket-container */
     height: 100vh; /* Занимает всю высоту экрана */
     pointer-events: none; /* Игнорирует клики */
-    z-index: -1; /* Размещаем под контентом */
+    z-index: -2; /* Размещаем под контентом */
     overflow: hidden; /* Скрываем выходящие за пределы части */
 }
 
@@ -117,6 +117,7 @@ header {
     max-width: 800px;
     margin: calc(var(--header-height) + 40px) auto 40px; /* Уменьшили отступ сверху */
     padding: 20px;
+    transition: all 0.5s ease;
 }
 
 
@@ -134,17 +135,17 @@ header {
     position: relative;
     display: flex;
     justify-content: center;
-    width: 100%;
-    height: 100%;
+    width: 87%;
+    height: 87%;
 }
 
 
 .user-photo {
     align-items: center;
-    max-width: 100%;
+    width: 100%;
     border-radius: 30px;
     object-fit: cover; /* Сохраняем пропорции фото */
-    max-height: 100%;
+    height: 100%;
 }
 
 .anket-card::before {
@@ -306,18 +307,12 @@ header {
 
 
 /*развернутая анкета*/
-
-.expanded-anket-container img {
-    margin: 0; /* Сбрасываем глобальные отступы */
-    text-align: left; /* Выравниваем текст слева */
-}
-
 .expanded-background{
     background-size: contain;
     position: fixed;
     top: 0;
     left: 0;
-    width: 68vw;
+    width: 26vw;
     height: 100vh;
     max-width: 100%;
     pointer-events: none;
@@ -325,66 +320,99 @@ header {
 }
 
 .expanded-background-image{
-    width: 100%;
+    width: 250%;
     height: 100%;
     object-fit: cover;
 }
 
 /* Контейнер для развернутой анкеты */
+/* Развернутая анкета - переработанная версия */
+/* Развернутая анкета - исправленные стили */
 .expanded-anket-container {
     display: none;
-    position: relative;
-    width: 100%;
+    position: fixed;
+    top: 6rem;
+    left: 0;
+    right: 0;
+    bottom: 0;
     padding: 20px;
+    background: #606F81;
+    z-index: 99;
+    overflow-y: auto;
 }
 
-/* Карточка развернутой анкеты */
 .expanded-anket-card {
-    display: flex;
-    gap: 20px;
-    justify-content: flex-start; /* Прижимаем всё к левому краю */
-    align-items: flex-start; /* Выравниваем элементы по верхнему краю */
+    display: grid;
+    grid-template-columns: minmax(300px, 35%) 1fr minmax(250px, 30%);
+    grid-template-rows: auto 1fr;
+    gap: 0;
+    max-width: 2000px;
+    margin: 0 auto;
+    padding: 2rem 0;
+    width: 100%;
+    align-items: start;
+    position: relative;
 }
 
-/* Левый блок (фото + кнопки) */
+/* Левый блок - фиксированная ширина */
 .expanded-left-section {
-    margin-left: 5%;
-    width: 50%;
+    grid-column: 1;
+    grid-row: 1 / span 2;
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Выравниваем дочерние элементы слева */
-    gap: 20px;
+    align-items: center;
+    gap: 2rem;
+    top: var(--header-height);
+    height: fit-content;
+    position: sticky;
 }
 
-/* Фото пользователя */
 .expanded-image-container {
-    width: 100%;
-    margin: 0;
-    padding: 0;
+    width: 35rem;
+    height: 35rem;
+    aspect-ratio: 1;
+    border-radius: 30px;
+    overflow: hidden;
+    background: #485C74;
+    position: relative;
 }
 
 .expanded-user-photo {
     width: 100%;
-    border-radius: 30px;
+    height: 100%;
     object-fit: cover;
-    margin: 0; /* Убираем автоматические отступы */
+    display: block;
 }
 
-/* Кнопки */
 .expanded-anket-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* Кнопки прижаты к левому краю */
-    gap: 20px;
-    margin: 0;
-    padding: 0;
-}
-
-/* Кнопка "Свернуть" */
-.collapse-button-container {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 1.5rem;
+    position: sticky;
+    top: 40rem;
+}
+
+.expanded-action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    width: 100%;
+}
+
+.expanded-action-button img {
+    cursor: pointer;
+    width: clamp(60px, 6vw, 80px);
+    height: clamp(60px, 6vw, 80px);
+}
+
+.collapse-button-container {
+    width: 100%;
+    padding-left: 4rem;
+    justify-content: flex-start;
+    display: flex;
+    flex-direction: column;
     cursor: pointer;
 }
 
@@ -398,48 +426,43 @@ header {
     color: #FFEBFC;
 }
 
-/* Кнопки "Дизлайк" и "Лайк" */
-.expanded-action-buttons {
-    display: flex;
-    gap: 20rem; /* Расстояние между кнопками */
-}
-
-.expanded-action-button img {
-    width: 80px;
-    height: 80px;
-    cursor: pointer;
-}
-
-/* Правый блок: информация о пользователе */
-.expanded-right-section {
-    width: 70%; /* Ширина правого блока */
+/* Центральный блок - стабильное позиционирование */
+.expanded-center-section {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 1rem 2rem;
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Расстояние между элементами */
+    gap: 2rem;
+    position: relative;
 }
 
-/* Остальные стили для информации о пользователе */
 .expanded-profile-info {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0.5rem;
+    color: #FFD0F8;
+    text-shadow: -2px -2px 0 #9A2867, 2px -2px 0 #9A2867, -2px 2px 0 #9A2867, 2px 2px 0 #9A2867;
 }
 
 .expanded-name-info-container {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .expanded-name-info {
-    font-size: 35px;
+    font-size: 2.8rem;
     font-weight: bold;
+    line-height: 1;
 }
 
 .expanded-user-gender,
 .expanded-user-zodiac {
-    width: 30px;
-    height: auto;
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
 }
 
 .expanded-location-info,
@@ -447,30 +470,69 @@ header {
 .expanded-study-info {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 20px;
+    gap: 1rem;
+    font-size: 1.6rem;
+}
+
+.expanded-location-info img,
+.expanded-work-info img,
+.expanded-study-info img {
+    width: 35px;
+    height: 35px;
+    flex-shrink: 0;
+}
+
+/* Правый блок - контролируемая высота */
+.expanded-right-section {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: start;
+    justify-self: end;
+    padding: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    max-height: 10vh;
+    overflow-y: auto;
+    max-width: 30vw;
+    width: 100%;
+    border-radius: 20px;
+    position: sticky;
+    top: 0;
+}
+
+.expanded-interest {
+    background: #FFEBFC;
+    color: #9A2867;
+    padding: 0.8rem 1.5rem;
+    border-radius: 20px;
+    font-size: 1.4rem;
+    border: 1px solid #9A2867;
+    flex-shrink: 0;
+}
+
+/* Нижний блок - фиксированное положение */
+.expanded-bottom-section {
+    grid-column: 2 / span 3;
+    grid-row: 2;
+    align-self: start;
+    margin-top: 8rem;
+    margin-left: 5rem;
+    padding: 0.5rem;
+    background: rgba(255, 235, 252, 0.9);
+    border-radius: 20px;
+    width: 80%;
+    word-wrap: break-word;
+    position: absolute;
 }
 
 .expanded-description {
-    background-color: #FFEBFC;
     color: #9A2867;
-    padding: 10px;
-    border-radius: 15px;
-    font-size: 20px;
-}
-
-.expanded-interests {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.expanded-interest-button {
-    background-color: #FFEBFC;
-    color: #9A2867;
-    border: 1px solid #9A2867;
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 18px;
-    white-space: nowrap;
+    font-size: 1.3rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    padding: 0.5rem;
+    width: 100%;
 }
