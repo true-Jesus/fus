@@ -1,58 +1,61 @@
+
 document.addEventListener('DOMContentLoaded', function () {
-    const dislikeButton = document.querySelector('.action-button.dislike');
-    const likeButton = document.querySelector('.action-button.like');
-    const anketCard = document.querySelector('.anket-card');
     const anketContainer = document.querySelector('.anket-container');
-    const expandButton = document.querySelector('.expand-button-container');
-    const expandedAnketContainer = document.querySelector('.expanded-anket-container');
-    const collapseButton = document.querySelector('.collapse-button-container');
 
-    if (dislikeButton && likeButton && anketCard) {
+    if (anketContainer) {
         loadUserData().then(() => {
-            console.log("Начальное значение targname:", targname);
-
-            dislikeButton.addEventListener('click', function () {
-                console.log("Нажат дизлайк. targname:", targname);
-                handleAssessment(0);
-                animateOutAndIn(anketCard, anketContainer);
+            anketContainer.addEventListener('click', function (event) {
+                if (event.target.closest('.action-button.dislike')) {
+                    console.log("Нажат дизлайк. targname:", targname);
+                    handleAssessment(0);
+                    animateOutAndIn(anketContainer);
+                } else if (event.target.closest('.action-button.like')) {
+                    console.log("Нажат лайк. targname:", targname);
+                    handleAssessment(1);
+                    animateOutAndIn(anketContainer);
+                }
             });
-
-            likeButton.addEventListener('click', function () {
-                console.log("Нажат лайк. targname:", targname);
-                handleAssessment(1);
-                animateOutAndIn(anketCard, anketContainer);
-            });
-        });
-
-        expandButton.addEventListener('click', function () {
-            showExpandedAnket(expandedAnketContainer, anketCard);
-        });
-
-        collapseButton.addEventListener('click', function () {
-            hideExpandedAnket(expandedAnketContainer, anketCard);
         });
     } else {
-        console.error("Один или несколько элементов не найдены!");
+        console.error("anketContainer не найден!");
     }
 
-    // Обработчики для кнопок в развернутой анкете через делегирование событий
-    document.addEventListener('click', async function (event) {
-        const target = event.target;
-        const expandedDislike = target.closest('.expanded-action-button.dislike');
-        const expandedLike = target.closest('.expanded-action-button.like');
+    // Делегирование событий для кнопок "Развернуть" и "Свернуть"
+    document.addEventListener('click', function (event) {
+        // Обработка кнопки "Развернуть"
+        if (event.target.closest('.expand-button-container')) {
+            const anketCard = document.querySelector('.anket-card');
+            const expandedAnketContainer = document.querySelector('.expanded-anket-container');
+            showExpandedAnket(expandedAnketContainer, anketCard);
+        }
+
+        // Обработка кнопки "Свернуть"
+        if (event.target.closest('.collapse-button-container')) {
+            const anketCard = document.querySelector('.anket-card');
+            const expandedAnketContainer = document.querySelector('.expanded-anket-container');
+            hideExpandedAnket(expandedAnketContainer, anketCard);
+        }
+
+        // Обработка кнопок "Лайк" и "Дизлайк" в развернутой анкете
+        const expandedDislike = event.target.closest('.expanded-action-button.dislike');
+        const expandedLike = event.target.closest('.expanded-action-button.like');
 
         if (expandedDislike || expandedLike) {
             event.preventDefault();
             const value = expandedDislike ? 0 : 1;
-            await handleAssessment(value);
-            await animateExpandedAnketOutAndIn();
+            handleAssessment(value).then(() => {
+                animateExpandedAnketOutAndIn();
+            });
         }
     });
+
 });
 
 let targname = "Изначальное значение";
 
-function animateOutAndIn(anketCard, anketContainer) {
+function animateOutAndIn(anketContainer) {
+    const anketCard = anketContainer.querySelector('.anket-card');
+
     anketCard.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
     anketCard.style.transform = 'translateY(-500px)';
     anketCard.style.opacity = '0';
@@ -72,16 +75,53 @@ function animateOutAndIn(anketCard, anketContainer) {
 
 function showExpandedAnket(expandedAnketContainer, anketCard) {
     const background = document.querySelector('.background');
-    anketCard.style.display = 'none';
-    expandedAnketContainer.style.display = 'flex';
-    background.style.display = 'none';
+    if (anketCard) {
+        // Получаем данные текущей анкеты
+        const userName = anketCard.querySelector('.user-name').textContent;
+        const userAge = anketCard.querySelector('.user-age').textContent;
+        const userGenderSrc = anketCard.querySelector('.user-gender').src;
+        const userZodiacSrc = anketCard.querySelector('.user-zodiac').src;
+        const userCity = anketCard.querySelector('.user-city').textContent;
+        const userWork = anketCard.querySelector('.user-work').textContent;
+        const userStudy = anketCard.querySelector('.user-study').textContent;
+        const userDescription = anketCard.querySelector('.user-description').textContent;
+        const interests = Array.from(anketCard.querySelectorAll('.interest-button')).map(button => button.textContent);
+        const userPhotoSrc = anketCard.querySelector('.user-photo').src;
+
+        // Обновляем данные в развернутой анкете
+        document.querySelector('.expanded-user-name').textContent = userName;
+        document.querySelector('.expanded-user-age').textContent = userAge;
+        document.querySelector('.expanded-user-gender').src = userGenderSrc;
+        document.querySelector('.expanded-user-zodiac').src = userZodiacSrc;
+        document.querySelector('.expanded-user-city').textContent = userCity;
+        document.querySelector('.expanded-user-work').textContent = userWork;
+        document.querySelector('.expanded-user-study').textContent = userStudy;
+        document.querySelector('.expanded-user-description').textContent = userDescription;
+
+        const interestsContainer = document.querySelector('.expanded-interests');
+        interestsContainer.innerHTML = ''; // Очищаем старые интересы
+        interests.forEach(interest => {
+            const button = document.createElement('button');
+            button.classList.add('interest-button');
+            button.textContent = interest;
+            interestsContainer.appendChild(button);
+        });
+
+        document.querySelector('.expanded-user-photo').src = userPhotoSrc;
+
+        anketCard.style.display = 'none';
+        expandedAnketContainer.style.display = 'flex';
+        background.style.display = 'none';
+    }
 }
 
 function hideExpandedAnket(expandedAnketContainer, anketCard) {
     const background = document.querySelector('.background');
-    anketCard.style.display = 'flex';
-    expandedAnketContainer.style.display = 'none';
-    background.style.display = 'block';
+    if (anketCard) {
+        anketCard.style.display = 'flex';
+        expandedAnketContainer.style.display = 'none';
+        background.style.display = 'block';
+    }
 }
 
 function createAnketCard() {
