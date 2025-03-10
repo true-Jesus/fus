@@ -41,6 +41,11 @@
 
     <div class="profile-container">
         <div class="profile-header">
+            <div class="delete-profil">
+                <a class = "icon-choise">
+                    <img src="../../image/profil elements/delete.png" title="Удалить профиль" alt="Удалить профиль" id="deleteProfil">
+                </a>
+            </div>
             <div class="profile-photo-container">
                 <img src="" alt="Фото профиля" id="userPhoto" class="profile-photo">
                 <div class="photo-overlay">
@@ -50,11 +55,11 @@
             </div>
             <div class = "choise-container">
                 <a class="icon-choise">
-                    <img src="../../image/profil elements/not selected.png" alt="Пол" id = "userGender">
+                    <img src="../../image/profil elements/not selected.png" title="Выбрать пол" alt="Пол" id = "userGender">
                     <img src="" alt="Иконка пола" id="genderIcon" class="gender-icon" style="display: none;">
                 </a>
                 <a class="icon-choise">
-                    <img src="../../image/profil elements/not selected.png" alt="Знак зодиака" id = "userZodiac">
+                    <img src="../../image/profil elements/not selected.png" title="Выбрать знак зодиака" alt="Знак зодиака" id = "userZodiac">
                     <img src="" alt="Иконка зодиака" id="zodiacIcon" class="zodiac-icon" style="display: none;">
                 </a>
                 <div class="gender-modal" id="genderModal">
@@ -145,39 +150,47 @@
         </div>
     </div>
     <div class="modal" id="application" hidden="hidden">
+        <div id= "wrap" class="wrapper" >
+            <main class="main">
+                <div class="main__content">
+                    <div class="avatar">
+                        <img id="image" class="image" src="" >
+                        <canvas id="canvas" class="canvas">
+                            Your browser does not support JS or HTML5!
+                        </canvas>
+                    </div>
 
-    <div id= "wrap" class="wrapper" >
-        <main class="main">
-            <div class="main__content">
-                <div class="avatar">
-                    <img id="image" class="image" src="" >
-                    <canvas id="canvas" class="canvas">
-                        Your browser does not support JS or HTML5!
-                    </canvas>
+                    <p>
+                        <input type="number" name="widthBox" id="widthBox" value="400" min="400" title="Width">
+
+                        <input type="number" name="heightBox" id="heightBox" value="400" min="400" title="Height">
+                    </p>
+                    <p>
+                        <label><input type="number" name="topBox" id="topBox" value="0" min="0" title="Top"> </label><br><br>
+                        <label><input type="number" name="leftBox" id="leftBox" value="0" min="0" title="Left"></label>
+                    </p>
+                    <p>
+                        <img src="/image/profil elements/send.png" alt="Готово" class="button" id="saveBtn">
+                    </p>
+                    <p>
+                        <img src="/image/profil elements/cansel.png" alt="Готово" class="button" id="cancelBtn">
+                    </p>
+                    <p>
+                        <a href="uploads/photoКарлик.png" target="_blank" class="a a_hidden" id="newImg">Open new photo</a>
+                    </p>
                 </div>
-
-                <p>
-                    <input type="number" name="widthBox" id="widthBox" value="400" min="400" title="Width">
-
-                    <input type="number" name="heightBox" id="heightBox" value="400" min="400" title="Height">
-                </p>
-                <p>
-                    <label><input type="number" name="topBox" id="topBox" value="0" min="0" title="Top"> </label><br><br>
-                    <label><input type="number" name="leftBox" id="leftBox" value="0" min="0" title="Left"></label>
-                </p>
-                <p>
-                    <img src="/image/profil elements/send.png" alt="Готово" class="button" id="saveBtn">
-                </p>
-                <p>
-                    <img src="/image/profil elements/cansel.png" alt="Готово" class="button" id="cancelBtn">
-                </p>
-                <p>
-                    <a href="uploads/photoКарлик.png" target="_blank" class="a a_hidden" id="newImg">Open new photo</a>
-                </p>
-            </div>
-        </main>
+            </main>
+        </div>
     </div>
+
+    <div class="sure-delete" id="sureDelete">
+        <img src="../../image/profil elements/sure.png" class = "sure-image">
+        <div class = "sure-buttons">
+            <img src="../../image/profil elements/cancellation.png" class = "button" id="cancellation">
+            <img src="../../image/profil elements/yes-delete.png" class = "button" id="yesDelete">
+        </div>
     </div>
+
     <script src="/templates/profilSettings/profilSettings.js"></script>
     <script src="/templates/edit/edit.js"></script>
 </body>

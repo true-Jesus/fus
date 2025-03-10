@@ -170,6 +170,15 @@ header {
     justify-content: center;
 }
 
+.delete-profil{
+    position: absolute;
+    display: flex;
+    align-items: baseline;
+    align-self: flex-start;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 .choise-container .icon-choise{
     margin-right: 10px;
     margin-bottom: 0;
@@ -573,5 +582,38 @@ header {
     display: none;
 }
 
+.sure-delete {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2000;
+    text-align: center;
+}
+
+.sure-image {
+    max-width: 30vw;
+    height: auto;
+}
+
+.sure-buttons {
+    position: absolute;
+    bottom: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 2rem;
+}
+
+#cancellation, #yesDelete {
+    cursor: pointer;
+    transition: transform 0.2s;
+    width: clamp(80px, 15vw, 150px);
+}
+
+#cancellation:hover, #yesDelete:hover {
+    transform: scale(1.05);
+}
 
 

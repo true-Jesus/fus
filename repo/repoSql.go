@@ -265,3 +265,33 @@ func (r *Repo) CreatRoom(user1, user2 string) error {
 
 	return nil
 }
+
+func (r *Repo) DeleteUser(username string) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return fmt.Errorf("ошибка начала транзакции: %w", err)
+	}
+	defer tx.Rollback()
+
+	queries := []struct {
+		query string
+		args  []interface{}
+	}{
+		{"DELETE FROM actions WHERE user_username = $1 OR target_username = $1", []interface{}{username}},
+		{"DELETE FROM rooms WHERE user1 = $1 OR user2 = $1", []interface{}{username}},
+		{"DELETE FROM profil WHERE username = $1", []interface{}{username}},
+		{"DELETE FROM users WHERE username = $1", []interface{}{username}},
+	}
+
+	for _, q := range queries {
+		if _, err := tx.Exec(q.query, q.args...); err != nil {
+			return fmt.Errorf("ошибка выполнения запроса %s: %w", q.query, err)
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("ошибка коммита транзакции: %w", err)
+	}
+
+	return nil
+}
