@@ -24,3 +24,7 @@ func (p *ProfileUseCase) GetProfileData(username string) (*repo.ProfileData, err
 	}
 	return data, nil
 }
+
+func (p *ProfileUseCase) DeleteProfile(username string) error {
+	return p.repo.DeleteUser(username)
+}

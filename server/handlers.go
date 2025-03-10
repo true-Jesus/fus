@@ -76,6 +76,7 @@ func NewRouter(h *Handlers) *mux.Router {
 			Route{Name: "chatTest", Method: http.MethodGet, Pattern: "/chatTest", HandlerFunc: h.ChatTestPage},
 			Route{Name: "rooms", Method: http.MethodGet, Pattern: "/rooms", HandlerFunc: h.handleRooms},
 			Route{Name: "chat", Method: http.MethodGet, Pattern: "/chat", HandlerFunc: h.ChatPage},
+			Route{Name: "DeleteProfile", Method: http.MethodPost, Pattern: "/deleteProfile", HandlerFunc: h.HandleDeleteProfile},
 		}
 	)
 	router := mux.NewRouter().StrictSlash(true)
@@ -756,4 +757,32 @@ func (h *Handlers) handleRooms(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func (h *Handlers) HandleDeleteProfile(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Username string `json:"user"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		log.Printf("Ошибка декодирования JSON: %v", err)
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.useCases.proUC.DeleteProfile(data.Username); err != nil {
+		log.Printf("Ошибка удаления профиля: %v", err) // Логирование ошибки
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	// Очистка куки
+	http.SetCookie(w, &http.Cookie{
+		Name:   "user",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1,
+	})
+
+	w.WriteHeader(http.StatusOK)
 }

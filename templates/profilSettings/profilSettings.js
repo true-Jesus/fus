@@ -33,8 +33,47 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const cancelButton = document.getElementById("cancelBtn");
     const saveBtnPhoto = document.getElementById("saveBtn")
+
+    const deleteProfilBtn = document.getElementById('deleteProfil');
+    const sureDeleteModal = document.getElementById('sureDelete');
+    const cancellationBtn = document.getElementById('cancellation');
+    const yesDeleteBtn = document.getElementById('yesDelete');
+
     genderModal.style.display = "none";
     zodiacModal.style.display = "none";
+
+    // Обработчики событий
+    deleteProfilBtn.addEventListener('click', () => {
+        sureDeleteModal.style.display = 'block';
+    });
+
+    cancellationBtn.addEventListener('click', () => {
+        sureDeleteModal.style.display = 'none';
+    });
+
+    yesDeleteBtn.addEventListener('click', () => {
+        const user = getCookie('user');
+        fetch('/deleteProfile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ user })
+        })
+            .then(response => {
+                if(response.ok) {
+                    // Очищаем куки и перенаправляем
+                    document.cookie = 'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+                    window.location.href = '/';
+                } else {
+                    alert('Ошибка при удалении профиля');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Ошибка сети');
+            });
+    });
 
     userGender.addEventListener("click", function(){
         genderModal.style.display = genderModal.style.display === "block" ? "none" : "block";
