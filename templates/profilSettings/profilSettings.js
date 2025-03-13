@@ -65,13 +65,10 @@ document.addEventListener("DOMContentLoaded", function() {
                     // Очищаем куки и перенаправляем
                     document.cookie = 'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
                     window.location.href = '/';
-                } else {
-                    alert('Ошибка при удалении профиля');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Ошибка сети');
             });
     });
 
@@ -327,7 +324,6 @@ document.addEventListener("DOMContentLoaded", function() {
             .catch(error => {
                 console.error('Ошибка при загрузке профиля:', error);
                 userPhoto.src = "/image/profil elements/photo.png"
-                alert("Ошибка при загрузке профиля:" + error)
             });
     }
 
@@ -365,7 +361,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 })
                 .catch(error => {
                     console.error('Ошибка при получении изображения:', error);
-                    alert('Не удалось получить фото')
                 });
         }
         else {
@@ -390,13 +385,11 @@ document.addEventListener("DOMContentLoaded", function() {
             })
                 .then(response => {
                     if(response.ok){
-                        alert("Данные успешно сохранены")
                     } else{
                         return response.text()
                     }
                 })
                 .then(data => {
-                    alert(data);
                 })
                 .catch(error => {
                     console.error('Ошибка при отправке данных:', error);
