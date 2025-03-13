@@ -30,13 +30,9 @@ async function register() {
         
         if(response.ok) {
             showForm('login');
-            alert('Регистрация успешна! Теперь войдите');
-        } else {
-            alert(await response.text());
         }
     } catch(error) {
         console.error('Ошибка регистрации:', error);
-        alert('Ошибка соединения');
     }
 }
 
@@ -58,12 +54,9 @@ async function login() {
             setAuthToken(token);
             setCookie("user", username, 30);
             window.location.href = '/profil';
-        } else {
-            alert('Ошибка входа: неверные данные');
         }
     } catch(error) {
         console.error('Ошибка входа:', error);
-        alert('Ошибка соединения');
     }
 }
 
