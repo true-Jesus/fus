@@ -631,6 +631,11 @@ func (h *Handlers) handleGetProfileWithPhoto(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	if profileData == nil {
+		w.WriteHeader(http.StatusNoContent) // 204 No Content
+		return
+	}
+
 	var photoURL string
 	if profileData.Photopath != "" {
 		photoURL = profileData.Photopath
