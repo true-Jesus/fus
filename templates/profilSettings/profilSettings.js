@@ -39,8 +39,18 @@ document.addEventListener("DOMContentLoaded", function() {
     const cancellationBtn = document.getElementById('cancellation');
     const yesDeleteBtn = document.getElementById('yesDelete');
 
+    const errorMessage = document.createElement('div');
+    errorMessage.id = 'errorMessage';
+    errorMessage.className = 'error-message';
+    document.querySelector('.profile-container').appendChild(errorMessage);
+
+    const interestsWarning = document.getElementById("interestsWarning");
+    const confirmSaveWithout = document.getElementById("confirmSaveWithout");
+    const cancelSave = document.getElementById("cancelSave");
+
     genderModal.style.display = "none";
     zodiacModal.style.display = "none";
+
 
     // Обработчики событий
     deleteProfilBtn.addEventListener('click', () => {
@@ -96,6 +106,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const gender = button.getAttribute("data-gender");
             userGenderSelect.value = gender;
             genderModal.style.display = "none";
+
         });
     });
 
@@ -158,6 +169,100 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    function checkCriticalErrors() {
+        return validateForm().length === 0; // Возвращает true если нет критических ошибок
+    }
+
+    function hasNoInterests() {
+        return interests.length === 0;
+    }
+
+    // Функция валидации формы
+    function validateForm() {
+        const errors = [];
+
+        // Проверка фотографии
+        const isDefaultPhoto = userPhoto.src.includes('photo.png') ||
+            userPhoto.src === window.location.href;
+        if (isDefaultPhoto) {
+            errors.push("Выберите фотографию");
+        }
+
+        // Проверка пола
+        if (genderIcon.style.display === 'none') {
+            errors.push('Выберите пол');
+        }
+
+        // Проверка знака зодиака
+        if (zodiacIcon.style.display === 'none') {
+            errors.push('Выберите знак зодиака');
+        }
+
+        // Проверка текстовых полей
+        if (!userNameInput.value.trim()) errors.push('Напишите своё имя');
+        if (!userAgeInput.value || parseInt(userAgeInput.value) < 1) errors.push('Напишите свой возраст');
+        if (!userCityInput.value.trim()) errors.push('Напишите свой город');
+        if (!userWorkInput.value.trim()) errors.push('Напишите свою работу');
+        if (!userStudyInput.value.trim()) errors.push('Напишите своё образование');
+        if (!userDescriptionInput.value.trim()) errors.push('Напишите что-нибудь о себе');
+
+        return errors;
+    }
+
+    // Функция обновления сообщений об ошибках
+    function updateErrorDisplay() {
+        const errors = validateForm();
+        errorMessage.textContent = errors.join('\n');
+    }
+
+    const fieldsToValidate = [
+        userNameInput, userAgeInput, userCityInput,
+        userWorkInput, userStudyInput, userDescriptionInput
+    ];
+
+    fieldsToValidate.forEach(field => {
+        field.addEventListener('input', updateErrorDisplay);
+    });
+
+    genderButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            setTimeout(updateErrorDisplay, 100); // Даем время на обновление DOM
+        });
+    });
+
+    zodiacButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            setTimeout(updateErrorDisplay, 100);
+        });
+    });
+
+// Отслеживание изменения фотографии
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            if (mutation.attributeName === 'src') {
+                updateErrorDisplay();
+            }
+        });
+    });
+    observer.observe(userPhoto, { attributes: true });
+
+    // Обработчики для кнопок предупреждения
+    confirmSaveWithout.addEventListener("click", proceedWithSave);
+    cancelSave.addEventListener("click", function() {
+        interestsWarning.style.display = "none";
+        document.getElementById("plus").click(); // Открываем модалку добавления интересов
+    });
+
+    interestsContainer.addEventListener("DOMSubtreeModified", function() {
+        if (!hasNoInterests()) {
+            interestsWarning.style.display = "none";
+        }
+    });
+
+    function proceedWithSave() {
+        interestsWarning.style.display = "none";
+        // ... существующая логика отправки данных
+    }
 
     let interests = []; // Массив для хранения интересов
     addInterestModal.style.display = "none";
@@ -329,7 +434,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
     loadProfile(); // Загружаем данные профиля при загрузке страницы
 
-    saveButton.addEventListener("click", function() {
+    saveButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        updateErrorDisplay();
+
+        if (!checkCriticalErrors()) return;
+
+        if (hasNoInterests()) {
+            interestsWarning.style.display = "block";
+        } else {
+            proceedWithSave();
+        }
         const user = getCookie('user');
         const userPhoto = document.getElementById("userPhoto"); // Получаем элемент userPhoto
 
@@ -396,5 +511,5 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
         }
     });
-
+    updateErrorDisplay();
 });
