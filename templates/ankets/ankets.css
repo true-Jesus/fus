@@ -308,20 +308,19 @@ header {
 
 /*развернутая анкета*/
 .expanded-background{
-    background-size: contain;
-    position: fixed;
+    position: absolute; /* Меняем с fixed на absolute */
     top: 0;
     left: 0;
-    width: 26vw;
-    height: 100vh;
-    max-width: 100%;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
     z-index: -1;
+    overflow: hidden;
 }
 
 .expanded-background-image{
-    width: 250%;
-    height: 100%;
+    width: 65%;
+    height: 90%;
     object-fit: cover;
 }
 
@@ -331,7 +330,7 @@ header {
 .expanded-anket-container {
     display: none;
     position: fixed;
-    top: 6rem;
+    top: 5rem;
     left: 0;
     right: 0;
     bottom: 0;
@@ -339,6 +338,7 @@ header {
     background: #606F81;
     z-index: 99;
     overflow-y: auto;
+    height: 100vh;
 }
 
 .expanded-anket-card {
@@ -435,6 +435,8 @@ header {
     flex-direction: column;
     gap: 2rem;
     position: relative;
+    top:2rem;
+    left: 2rem;
 }
 
 .expanded-profile-info {
