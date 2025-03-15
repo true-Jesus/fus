@@ -1,4 +1,4 @@
-
+let currentUserData = null;
 document.addEventListener('DOMContentLoaded', function () {
     const anketContainer = document.querySelector('.anket-container');
 
@@ -43,8 +43,23 @@ document.addEventListener('DOMContentLoaded', function () {
         if (expandedDislike || expandedLike) {
             event.preventDefault();
             const value = expandedDislike ? 0 : 1;
-            handleAssessment(value).then(() => {
-                animateExpandedAnketOutAndIn();
+
+            handleAssessment(value).then((success) => {
+                if (success) {
+                    // Обновляем обе анкеты
+                    loadUserData().then(() => {
+                        const mainAnket = document.querySelector('.anket-container .anket-card');
+                        const expandedAnket = document.querySelector('.expanded-anket-card');
+
+                        // Синхронизируем данные
+                        const processedData = processUserData(currentUserData);
+                        updateProfileForElement(mainAnket, processedData);
+                        updateExpandedProfileForElement(expandedAnket, processedData);
+
+                        // Анимируем только если есть следующая анкета
+                        animateExpandedAnketOutAndIn();
+                    });
+                }
             });
         }
     });
@@ -60,12 +75,17 @@ function animateOutAndIn(anketContainer) {
     anketCard.style.transform = 'translateY(-500px)';
     anketCard.style.opacity = '0';
 
-    setTimeout(() => {
-        const newCard = createAnketCard();
+    setTimeout(async () => {
+        const newCard = await createAnketCard();
+        if (!newCard) {
+            showNoAnketsMessage();
+            return;
+        }
+
         newCard.style.opacity = '0';
         anketContainer.replaceChild(newCard, anketCard);
 
-        void newCard.offsetWidth;
+        void newCard.offsetHeight;
 
         newCard.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
         newCard.style.opacity = '1';
@@ -124,10 +144,23 @@ function hideExpandedAnket(expandedAnketContainer, anketCard) {
     }
 }
 
-function createAnketCard() {
+async function createAnketCard() {
     const newCard = document.createElement('div');
     newCard.classList.add('anket-card');
 
+    const user = getCookie('user');
+    if (!user) {
+        console.error("Cookie пользователя не найдена");
+        return null;
+    }
+
+    try {
+        const response = await fetch(`/getanket?user=${user}`);
+        if (!response.ok) return null;
+        const userData = await response.json();
+        if (!userData.username) return null;
+
+        const processedData = processUserData(userData);
     newCard.innerHTML = `
         <div class="image-container">
             <img src="" alt="Фото пользователя" class="user-photo">
@@ -170,8 +203,23 @@ function createAnketCard() {
         </div>
     `;
 
-    loadUserDataForElement(newCard);
-    return newCard;
+        loadUserDataForElement(newCard);
+        return newCard;
+    } catch (error) {
+        console.error('Ошибка при создании карточки:', error);
+        return null;
+    }
+}
+
+function showNoAnketsMessage() {
+    document.querySelector('.no-ankets-message').style.display = 'block';
+    document.querySelector('.anket-container').style.display = 'none';
+    document.querySelector('.expanded-anket-container').style.display = 'none';
+}
+
+function hideNoAnketsMessage() {
+    document.querySelector('.no-ankets-message').style.display = 'none';
+    document.querySelector('.anket-container').style.display = 'block';
 }
 
 async function loadUserData() {
@@ -183,21 +231,33 @@ async function loadUserData() {
     try {
         const response = await fetch(`/getanket?user=${user}`);
         if (!response.ok) {
+            if (response.status === 404) {
+                showNoAnketsMessage();
+                return null;
+            }
             throw new Error(`HTTP ошибка! Статус: ${response.status}`);
         }
         const userData = await response.json();
+
+        if (!userData || !userData.username) {
+            showNoAnketsMessage();
+            return null;
+        }
+
         console.log("Данные пользователя загружены:", userData);
+        currentUserData = userData; // Сохраняем данные
         const processedData = processUserData(userData);
         targname = processedData.tname;
         updateProfile(processedData);
         updateExpandedProfile(processedData);
-        console.log("targname после loadUserData:", targname);
+        hideNoAnketsMessage();
         return processedData;
     } catch (error) {
         console.error('Ошибка при загрузке данных:', error);
+        showNoAnketsMessage();
+        return null;
     }
 }
-
 async function loadUserDataForElement(card) {
     const user = getCookie('user');
     if (!user) {
@@ -422,10 +482,9 @@ function getCookie(name) {
 
 async function handleAssessment(value) {
     const user = getCookie('user');
-
     if (!user) {
         console.error("Cookie пользователя не найдена в handleAssessment");
-        return;
+        return false;
     }
 
     console.log("handleAssessment - Пользователь:", user, "Цель:", targname, "Оценка:", value);
@@ -447,8 +506,8 @@ async function handleAssessment(value) {
             throw new Error(`HTTP ошибка! Статус: ${response.status}`);
         }
 
-        const responseData = await response.json();
-        console.log('Оценка отправлена успешно!', responseData);
+        // Принудительно сбрасываем кеш
+        currentUserData = null;
         return true;
     } catch (error) {
         console.error('Ошибка при отправке оценки:', error);
@@ -467,30 +526,38 @@ async function animateExpandedAnketOutAndIn() {
     expandedContainer.style.transform = 'translateY(-500px)';
     expandedContainer.style.opacity = '0';
 
-    // Ждем завершения анимации
-    await new Promise(resolve => setTimeout(resolve, 500));
+    try {
+        // Ждем завершения анимации
+        await new Promise(resolve => setTimeout(resolve, 500));
 
-    // Загружаем новые данные
-    const processedData = await loadUserData();
-    if (!processedData) return;
+        // Загружаем новые данные
+        const processedData = await loadUserData();
 
-    // Обновляем данные в развернутой анкете
-    updateExpandedProfile(processedData);
+        if (!processedData) {
+            hideExpandedAnket(expandedContainer, document.querySelector('.anket-card'));
+            showNoAnketsMessage();
+            return;
+        }
 
-    // Сбрасываем стили для новой анимации
-    expandedContainer.style.transition = 'none';
-    expandedContainer.style.transform = 'translateY(500px)';
-    expandedContainer.style.opacity = '0';
+        // Обновляем данные в развернутой анкете
+        updateExpandedProfile(processedData);
 
-    // Принудительное обновление DOM
-    void expandedContainer.offsetHeight;
+        // Сбрасываем стили для новой анимации
+        expandedContainer.style.transition = 'none';
+        expandedContainer.style.transform = 'translateY(500px)';
+        expandedContainer.style.opacity = '0';
 
-    // Анимация появления новой анкеты
-    expandedContainer.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
-    expandedContainer.style.transform = 'translateY(0)';
-    expandedContainer.style.opacity = '1';
+        // Принудительное обновление DOM
+        void expandedContainer.offsetHeight;
 
-    // Убедимся, что фон сохраняет свои размеры
-    expandedBackground.style.width = '26vw';
-    expandedBackground.style.height = '100%';
+        // Анимация появления новой анкеты
+        expandedContainer.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+        expandedContainer.style.transform = 'translateY(0)';
+        expandedContainer.style.opacity = '1';
+
+    } catch (error) {
+        console.error('Error in expanded animation:', error);
+        hideExpandedAnket(expandedContainer, document.querySelector('.anket-card'));
+        showNoAnketsMessage();
+    }
 }
